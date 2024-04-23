@@ -3,16 +3,13 @@
 Handson
 
 Problem Statement:
-
 Find out whether the following file will compile. If it does not compile, how you would fix it?
-
-  
 
 ```java
 public static void main(String[ ] args) {
 
       int x = 5;
-      while (x > 1) { 
+      while (x > 1) {  
           x = x + 1;
           if (x < 3) {
                System.out.println(“small x”);
@@ -21,8 +18,10 @@ public static void main(String[ ] args) {
 }
 ```
 
-  
-  
+  The above will proceed till **(2^31)-1**, maximum value which can attain by `int`, once it reaches maximum value it will go to the minimum value **-(2^31)**
+
+
+
 
 Problem Statement:
 
