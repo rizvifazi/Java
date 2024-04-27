@@ -20,11 +20,11 @@ Throwable class
 
 2 types of Exception
 1. Checked Exception 
-        - all subclasses of Exception class excluding RuntimeException
-        - Eventhough we have written 100% correct prg, ur code has to be surrounded by try/catch block or throws keyword then only the compiler will allow to compile
-        - It will insist the programmer to surround the code using try/catch block or throws keyword otherwise the prg will not compile
+- all subclasses of Exception class excluding RuntimeException
+- Eventhough we have written 100% correct prg, ur code has to be surrounded by try/catch block or throws keyword then only the compiler will allow to compile
+- It will insist the programmer to surround the code using try/catch block or throws keyword otherwise the program will not compile
 
-2. Unchecked Exception
+1. Unchecked Exception
         - all subclasses of RuntimeException class
         - Eventhough ur prg contains Exception, the compiler will just compile the prg but at runtime we get an exception
         - will not insist the programmer to surround the code using try/catch block or throws keyword, the prg will just compile but at runtime we get an related exception
