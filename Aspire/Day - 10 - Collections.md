@@ -1,7 +1,7 @@
 
 *Date : 05.03.2024*
 
-Map interface
+## Map interface
 
 1. HashMap class
 

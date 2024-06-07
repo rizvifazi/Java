@@ -10,35 +10,35 @@
 - Two types of operations:
 
 ## Intermediate operation:
-- Return stream itself.
-- Optional operation - we can chain multiple intermediate operations.
+- **Return stream itself.**
+- **Optional** operation - we can chain multiple intermediate operations.
 - Operations: `filter()`, `map()`, `flatMap()`, `sorted()`, `peek()`, `distinct()`, `limit()`, `skip()`.
 
 ## Terminal operation:
 - It will traverse into the newly generated stream and return a single value.
-- Mandatory operation - we can't chain terminal operations.
+- **Mandatory operation** - **we can't chain terminal operations.**
 - Operations: `toArray()`, `forEach()`, `count()`, `min()`, `max()`, `reduce()`, `collect()`, `anyMatch()`, `allMatch()`, `noneMatch()`, `findFirst()`.
 
 ### 3 steps:
 1. Creation of Stream.
-2. Intermediate operation.
+2. Intermediate operation. - Optional
 3. Terminal operation.
 
-- If we perform a terminal operation, then that stream is completely closed, so when we perform any other operation on a closed stream, we get an IllegalStateException.
-
+- If we perform a terminal operation, then that stream is completely closed, so when we perform any other operation on a closed stream, we get an **IllegalStateException.**
+ 
 ## Creation of Stream (Finite stream):
 - Two ways:
   1. `stream()`: Used to generate a stream from some source like List or Set or Array.
 
     ```java
-    String[] s = new String[]{"one", "two", "three"};
-    Stream<String> st = Arrays.stream(s);
+    String[] s = new String[]{"one", "two", "three"}; //Anonymous array
+    Stream<String> st = s.stream();
     ```
 
   2. `of()`: Used to create our own stream.
 
     ```java
-    Stream<Integer> st2 = Stream.of(1, 2, 3, 4, 5);
+    Stream<Integer> st2 = Stream.of(1, 2, 3, 4, 5); 
     ```
 
 - `filter(Predicate)`: Intermediate - used to filter the data based on some condition.
@@ -107,7 +107,7 @@ public class Main {
 - `collect()`: Terminal - used to collect the data as List or Set or Map.
 
 `Collectors.toList()`
-`Collectors.toSet()`
+`Collectors.toSet()`  
 `Collectors.toMap(Function f1,Function f2)`
 `Collectors.joining()`
 `Collectors.counting()`
@@ -197,7 +197,39 @@ public class Main {
 ```java
 public class Main {
     public static void main(String[] args) {
-        // Other code snippets...
+      List<String> l11=List.of("9","A","z","1","B","4","e","f");
+      
+     List<String> l2=l11.stream().sorted().collect(Collectors.toList());
+     System.out.println(l2); //[1, 4, 9, A, B, e, f, z] asc order
+     
+     List<String> l3=l11.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+     System.out.println(l3); //desc order
+     
+     List<Student> l1=new ArrayList<>();
+     l1.add(new Student(23,"PK"));
+     l1.add(new Student(26,"KK"));
+     l1.add(new Student(23,"MK")); 
+     l1.add(new Student(21,"SK"));
+     l1.add(new Student(40,"RK"));
+     l1.add(new Student(30,"BK"));
+     l1.add(new Student(29,"DK"));
+     l1.add(new Student(28,"GK"));
+     l1.add(new Student(33,"TK"));
+     
+     //comparingInt(),comparingDouble(), comparingLong()
+    List<Student> l4=l1.stream().sorted(Comparator.comparingInt(Student::getId))
+                .collect(Collectors.toList());
+    l4.forEach(System.out::println);
+    System.out.println();
+    
+    List<Student> l5=l1.stream().sorted(Comparator.comparing(Student::getName))
+            .collect(Collectors.toList());
+    l5.forEach(System.out::println); //name in asc order
+    
+    System.out.println();
+    List<Student> l6=l1.stream().sorted(Comparator.comparing(Student::getName).reversed())
+            .collect(Collectors.toList());
+    l6.forEach(System.out::println); //name in desc order
     }
 }
 ```
@@ -217,6 +249,66 @@ public class Main {
   - `takeWhile(Predicate)`: If the stream does not match the predicate, it will discard the rest of the stream.
   - `dropWhile(Predicate)`: If the stream does not match the predicate, it will print the rest of the stream.
 
+```java
+
+public class Main {
+    public static void main(String[] args) {
+        Stream<String> st=Stream.<String>builder().add("Ram").add("Sam").add("Raj").build();
+        st.forEach(System.out::println);  //Ram Sam Raj
+        
+        Stream<Integer> st1=Stream.<Integer>builder().add(10).add(20).add(30).build();
+        st1.forEach(System.out::println); //10 20 30
+        
+        Stream<String> st2=Stream.generate(()->"hello").limit(5);  // to limit infinite strea
+        st2.forEach(System.out::println);
+        
+        Stream.iterate(2, (i)->i*2).skip(3).limit(5).forEach(System.out::println);
+        
+        
+        // Primitive data type streams
+        IntStream i1=IntStream.range(1, 6); //start to end-1
+        i1.forEach(System.out::println); //1 2 3 4 5
+        
+        IntStream i2=IntStream.rangeClosed(1, 6); //start to end
+        i2.forEach(System.out::println); //1 2 3 4 5 6
+        
+        IntStream i3="abcd".chars();
+        i3.forEach(System.out::println); //65 66 67 68
+        
+        Random r=new Random();
+        DoubleStream d=r.doubles(5);
+        d.forEach(System.out::println);
+        
+        List<Student> l1=new ArrayList<>();
+        l1.add(new Student(23,"PK"));
+        l1.add(new Student(26,"KK"));
+        l1.add(new Student(23,"MK")); 
+        l1.add(new Student(21,"SK"));
+        l1.add(new Student(40,"RK"));
+        l1.add(new Student(30,"BK"));
+        l1.add(new Student(29,"DK"));
+        l1.add(new Student(28,"GK"));
+        l1.add(new Student(33,"TK"));
+        
+        IntStream i4=l1.stream().mapToInt(Student::getId);
+        i4.forEach(System.out::println);
+        
+        OptionalInt op=l1.stream().mapToInt(Student::getId).max();
+        System.out.println(op.getAsInt()); //40
+        
+        OptionalDouble op1=l1.stream().mapToDouble(Student::getId).average();
+        System.out.println(op1.getAsDouble()); //28.111111111111
+        
+        //IntSummaryStatistics,DoubleSummaryStatistics,LongSummaryStatistics 
+       IntSummaryStatistics i5=l1.stream().collect(Collectors.summarizingInt((t)->t.getId()));
+       System.out.println(i5);
+       System.out.println(i5.getAverage()+" "+i5.getCount());
+       
+       Stream.of(2,4,6,8,9,10,12).takeWhile((n)->n%2==0).forEach(System.out::println); //2 4 6 8
+       Stream.of(2,4,6,8,9,10,12).dropWhile((n)->n%2==0).forEach(System.out::println); //9 10 12
+    }
+}
+```
 ## Parallel Stream:
 
 - We want to access the stream elements parallelly.
