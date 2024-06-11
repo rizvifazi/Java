@@ -1,9 +1,25 @@
 
-*Date : 06.07.2024*
 
-# Hands-on
 
-1.	Create spring boot application to display employee info in JSON
+---
+# EmployeeInfoSpring
+
+Spring based REST API application to manage Employee details.
+
+
+
+---
+# Usage
+
+### 1. Clone the repo
+### 2. Open via IDE (Eclipse) and Import as Existing Maven Project
+### 3. Show in Local terminal and run `mvn clean install`
+### 4. Update the project to import all dependencies
+
+---
+# System requirements
+
+### 1. JDK 17 or above 
 
 ---
 
@@ -309,18 +325,65 @@ Navigate to http://localhost:2020/app/employees through a browser to See the bro
 
 ## 10. Browser Outputs
 
-
-### Error Page
-![[Pasted image 20240609233108.png]]
-
-
 ### http://localhost:2020/app/employees 
 
-![[Pasted image 20240609232826.png]]
+```JSON
+[
+  {
+    "id": 1,
+    "name": "Alice Johnson",
+    "salary": 52000,
+    "address": "San Francisco, CA"
+  },
+  {
+    "id": 2,
+    "name": "Bob Williams",
+    "salary": 48000,
+    "address": "Seattle, WA"
+  },
+  {
+    "id": 3,
+    "name": "Charlie Miller",
+    "salary": 61000,
+    "address": "New York, NY"
+  },
+  {
+    "id": 4,
+    "name": "Diana Garcia",
+    "salary": 39000,
+    "address": "Austin, TX"
+  },
+  {
+    "id": 5,
+    "name": "Ethan Lee",
+    "salary": 45000,
+    "address": "Chicago, IL"
+  }
+]
+```
 
 
 ### http://localhost:2020/app/employee/3
+```JSON
+{
+  "id": 3,
+  "name": "Charlie Miller",
+  "salary": 61000,
+  "address": "New York, NY"
+}
+```
 
-![[Pasted image 20240609232925.png]]
+### Error Page
+```HTML
+<h2 style="font-weight: bold; color: red; margin: 2rem 0;">Error 404! Please check the URL</h2>
+	<p>The requested resource was not found.</p>
+<h3 style="font-family: monospace; font-size: smaller; margin-top: 1rem;">Correct Usage:</h3>
+  <ul>
+	<li style="font-family: monospace;">localhost:2020/app/employees</li>
+	<li style="font-family: monospace;">localhost:2020/app/employee/{id}</li>
+  </ul>
+```
+
+
 
 

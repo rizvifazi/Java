@@ -101,8 +101,8 @@ com.pack.Example1@5af3afd9
 com.pack.Example1@323b36e0
 com.pack.Example1@44ebcd03
 Example3 [message3=Struts Framework]
-
 ```
+
 ## `@Autowired`  
 - Used to inject one bean into another bean, perform autowiring based on `ByType` . This will be checked internally   
 - Used above only `setter method` or `constructor` or `fields` (variables).  

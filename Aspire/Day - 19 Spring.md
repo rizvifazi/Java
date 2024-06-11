@@ -1,26 +1,22 @@
 
 *Date : 06.03.2024*
 
+# JPA Relationship
+ - used to establish the relationship between entities
 
+## 1. One to One
+  - one user has only one vehicle
+  - In User class, we will be creating an object for Vehicle class, this can be other way around if required.
 
-1.	Create JPA Relationship for the following diagram
-![[jpa.png]]
- 
+| User table                             | Vehicle table                 |
+| -------------------------------------- | ----------------------------- |
+| user_id(pk)  user_name  vehicle_id(fk) | vehicle_id(pk)   vehicle_name |
 
-JPA Relationship
-     - used to establish the relationship between entities
+### a. Configure db info and hibernate properties in persistence.xml
 
-1. One to One
-      - one user has only one vehicle
-      - In User class, we will be creating an object for Vehicle class
+### b. Create Vehicle entity class 
 
-User table                                    Vehicle table
-user_id(pk)  user_name  vehicle_id(fk)         vehicle_id(pk)   vehicle_name
-
-a. Configure db info and hibernate properties in persistence.xml
-
-b. Create Vehicle entity class 
-
+```java
 @Entity
 @Table(name="veh100")
 public class Vehicle {
@@ -33,9 +29,11 @@ public class Vehicle {
 
   //getter,setter, constructor
 }
+```
 
-c. Create User entity class
+### c. Create User entity class
 
+```java
 @Entity
 @Table(name="user100")
 public class User {
@@ -46,60 +44,67 @@ public class User {
   @Column(name="user_name")
   private String name;
   
-  @OneToOne
-  @JoinColumn(name="vehicle_id")
+  @OneToOne //One to one relationship
+  @JoinColumn(name="vehicle_id") //FOreign key relationship
   private Vehicle vehicle;   //one user has only one vehicle
 
   //getter,setter, constructor
 }
+```
 
-d. Configure entity class in xml file
+### d. Configure entity class in persistence.xml file
+```xml
+	<class>com.pack.User</class>
+	<class>com.pack.Vehicle</class>
+```
 
-<class>com.pack.User</class>
-      <class>com.pack.Vehicle</class>
+### e. Create Main class
 
-e. Create Main class
 
-Cascading operation
-    - used in mapping concept, if we perform any operation on one entity class it should be automatically affect the another entity class - 4 types
-1. CascadeType.PERSIST
-2. CascadeType.UPDATE
-3. CascadeType.REMOVE
-4. CascadeType.ALL
+## Cascading operation
+- used in mapping concept, if we perform any operation on one entity class it should be automatically affect the another entity class - 4 types
+	1. `CascadeType.PERSIST` - If performing persist operation on one entity class it will effect the another entity class
+	2. `CascadeType.UPDATE` - If performing update operation on one entity class it will effect the another entity class
+	3. `CascadeType.REMOVE` - If performing remove operation on one entity class it will effect the another entity class
+	4. `CascadeType.ALL`- If performing all operation on one entity class it will effect the another entity class
 
+```java
 public class Main1 {
 
-              public static void main(String[] args) {
-                             EntityManagerFactory emf=Persistence.createEntityManagerFactory("student-info");
-                             EntityManager em=emf.createEntityManager();
-                             EntityTransaction et=em.getTransaction();
-                             et.begin();
-                             
-                             Vehicle v1=new Vehicle();
-                             v1.setName("Benz");
-                             Vehicle v2=new Vehicle();
-                             v2.setName("BMW");
-                             
-                             User u1=new User();
-                             u1.setName("Ram");
-                             u1.setVehicle(v1);
-                             User u2=new User();
-                             u2.setName("Sam");
-                             u2.setVehicle(v2);
-                             
-                             //em.persist(v1);
-                             //em.persist(v2);
-                             em.persist(u1);
-                             em.persist(u2);
-                             
-                             et.commit();
-                             System.out.println("Success");
-                             em.close();
-                             emf.close();
-              }
+  public static void main(String[] args) {
+	 EntityManagerFactory emf=Persistence.createEntityManagerFactory("student-info");
+	 EntityManager em=emf.createEntityManager();
+	 EntityTransaction et=em.getTransaction();
+	 et.begin();
+	 
+	 Vehicle v1=new Vehicle();
+	 v1.setName("Benz");
+	 Vehicle v2=new Vehicle();
+	 v2.setName("BMW");
+	 
+	 User u1=new User();
+	 u1.setName("Ram");
+	 u1.setVehicle(v1);
+	 User u2=new User();
+	 u2.setName("Sam");
+	 u2.setVehicle(v2);
+	 
+	 //em.persist(v1);
+	 //em.persist(v2);
+	 em.persist(u1);
+	 em.persist(u2);
+	 
+	 et.commit();
+	 System.out.println("Success");
+	 em.close();
+	 emf.close();
+  }
 
 }
+```
 
+
+```MYSQL
 mysql> select * from veh100;
 +------------+--------------+
 | vehicle_id | vehicle_name |
@@ -117,18 +122,19 @@ mysql> select * from user100;
 |      11 | Sam       |         12 |
 +---------+-----------+------------+
 2 rows in set (0.00 sec)
+```
 
-2. One to many 
-      - one user has many vehicle, in this case it creates a separate table which contain PK from both table
 
-User table                                    Vehicle table
-user_id(pk)  user_name                vehicle_id(pk)   vehicle_name
+## 2. One to many 
+  - one user has many vehicle, in this case it creates a separate table which contain PK from both table
 
-user_vehicle table
-user_id   vehicle_id
+| User table             | Vehicle table                 | user_vehicle table   |
+| ---------------------- | ----------------------------- | -------------------- |
+| user_id(pk)  user_name | vehicle_id(pk)   vehicle_name | user_id   vehicle_id |
 
-a. Create Vehicle1 entity class
+### a. Create Vehicle1 entity class
 
+```java
 @Entity
 @Table(name="veh101")
 public class Vehicle1 {
@@ -141,9 +147,10 @@ public class Vehicle1 {
   
   //getter,setter, constructor
 }
+```
 
-b. Create User1 entity class
-
+### b. Create User1 entity class
+```java
 @Entity
 @Table(name="user101")
 public class User1 {
@@ -162,14 +169,17 @@ public class User1 {
 
 //getter,setter, constructor
 }
+```
 
-C. Configure entity class in xml file
+### C. Configure entity class in xml file
+```xml
+	<class>com.pack.User1</class>
+	<class>com.pack.Vehicle1</class>
+```
 
-<class>com.pack.User1</class>
-      <class>com.pack.Vehicle1</class>
+### e. Create Main class
 
-e. Create Main class
-
+```java
 public class Main1 {
 
               public static void main(String[] args) {
@@ -200,8 +210,9 @@ public class Main1 {
               }
 
 }
+```
 
-
+```mysql
 mysql> select * from veh101;
 +------------+--------------+
 | vehicle_id | vehicle_name |
@@ -227,14 +238,15 @@ mysql> select * from user101_veh101;
 |            13 |                  15 |
 +---------------+---------------------+
 2 rows in set (0.01 sec)
+```
 
-3. Many to one
-      - Many vehicle belongs to one user
+## 3. Many to one
+  - Many vehicle belongs to one user
 
-4. Many to Many
-      - Many user will have many vehicles
+## 4. Many to Many
+  - Many user will have many vehicles
 
-
+```java
 @Entity
 @Table(name="veh102")
 public class Vehicle2 {
@@ -250,8 +262,9 @@ public class Vehicle2 {
   
 
 }
+```
 
-
+```java
 @Entity
 @Table(name="user102")
 public class User2 {
@@ -265,45 +278,51 @@ public class User2 {
   @ManyToMany(targetEntity=Vehicle2.class, cascade=CascadeType.ALL)
   private List<Vehicle2> vehicle=new ArrayList<>();
 }
+```
 
+
+```java
 public class Main1 {
 
-              public static void main(String[] args) {
-                             EntityManagerFactory emf=Persistence.createEntityManagerFactory("student-info");
-                             EntityManager em=emf.createEntityManager();
-                             EntityTransaction et=em.getTransaction();
-                             et.begin();
-                             
-                             Vehicle2 v1=new Vehicle2();
-                             v1.setName("Benz");
-                             Vehicle2 v2=new Vehicle2();
-                             v2.setName("BMW");
-                             
-                             List<Vehicle2> l1=new ArrayList<>();
-                             l1.add(v1);
-                             l1.add(v2);
-                             List<Vehicle2> l2=new ArrayList<>();
-                             l2.add(v1);
-                             l2.add(v2);
-                             
-                             User2 u1=new User2();
-                             u1.setName("Ram");
-                             u1.setVehicle(l1);
-                             User2 u2=new User2();
-                             u2.setName("Sam");
-                             u2.setVehicle(l2);
-                             
-                             em.persist(u1);
-                             em.persist(u2);
-                             
-                             et.commit();
-                             System.out.println("Success");
-                             em.close();
-                             emf.close();
-              }
+  public static void main(String[] args) {
+		 EntityManagerFactory emf=Persistence.createEntityManagerFactory("student-info");
+		 EntityManager em=emf.createEntityManager();
+		 EntityTransaction et=em.getTransaction();
+		 et.begin();
+		 
+		 Vehicle2 v1=new Vehicle2();
+		 v1.setName("Benz");
+		 Vehicle2 v2=new Vehicle2();
+		 v2.setName("BMW");
+		 
+		 List<Vehicle2> l1=new ArrayList<>();
+		 l1.add(v1);
+		 l1.add(v2);
+		 List<Vehicle2> l2=new ArrayList<>();
+		 l2.add(v1);
+		 l2.add(v2);
+		 
+		 User2 u1=new User2();
+		 u1.setName("Ram");
+		 u1.setVehicle(l1);
+		 User2 u2=new User2();
+		 u2.setName("Sam");
+		 u2.setVehicle(l2);
+		 
+		 em.persist(u1);
+		 em.persist(u2);
+		 
+		 et.commit();
+		 System.out.println("Success");
+		 em.close();
+		 emf.close();
+  }
 
 }
+```
 
+
+```mysql
 mysql> select * from veh102;
 +------------+--------------+
 | vehicle_id | vehicle_name |
@@ -332,17 +351,19 @@ mysql> select * from user102_veh102;
 |            19 |                 18 |
 +---------------+--------------------+
 4 rows in set (0.01 sec)
+```
 
 
-JPA Inheritance
-    - entity class also can be inherited - 3 types
+# JPA Inheritance
+- entity class also can be inherited - 3 types
 
-1. Single table/Table per class inheritance
-      - For all entity class it will create only a single table 
+## 1. Single table/Table per class inheritance
+  - For all entity class it will create only a single table 
 
-@DiscriminatorColumn - used to differentiate the type of employee
-@DiscriminatorValue - used to provide value for the column we generated
+	`@DiscriminatorColumn `- used to differentiate the type of employee
+	`@DiscriminatorValue` - used to provide value for the column we generated
 
+```java
 @Entity
 @Table(name="emp100")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
@@ -353,62 +374,71 @@ public class Employee {
    private Integer id;
    private String name;
 }
+```
 
+
+```java
 @Entity
 @DiscriminatorValue(value="reg_employee")
 public class RegularEmployee extends Employee{
     private Double salary;
     private Double bonus;
 }
+```
 
+```java
 @Entity
 @DiscriminatorValue(value="cont_employee")
 public class ContractEmployee extends Employee{
     private Double payPerHour;
     private Integer duration;
 }
+```
 
+```xml
 <class>com.pack.Employee</class>
-      <class>com.pack.RegularEmployee</class>
-      <class>com.pack.ContractEmployee</class>
+<class>com.pack.RegularEmployee</class>
+<class>com.pack.ContractEmployee</class>
+```
 
-
+```java
 public class Main {
-              public static void main(String[] args) {
-                             EntityManagerFactory emf=Persistence.createEntityManagerFactory("student-info");
-                             EntityManager em=emf.createEntityManager();
-                             EntityTransaction et=em.getTransaction();
-                             et.begin();
-                             
-                             Employee e1=new Employee();
-                             e1.setId(100);
-                             e1.setName("Ram");
-                             
-                             RegularEmployee r1=new RegularEmployee();
-                             r1.setId(101);
-                             r1.setName("Sam");
-                             r1.setSalary(20000.0);
-                             r1.setBonus(2000.0);
-                             
-                             ContractEmployee c1=new ContractEmployee();
-                             c1.setId(102);
-                             c1.setName("Saj");
-                             c1.setPayPerHour(2000.2);
-                             c1.setDuration(20);
-                             
-                             em.persist(e1);
-                             em.persist(r1);
-                             em.persist(c1);
-                             
-                             et.commit();
-                             System.out.println("Success");
-                             em.close();
-                             emf.close();
-                                                          
-              }
+	  public static void main(String[] args) {
+		 EntityManagerFactory emf=Persistence.createEntityManagerFactory("student-info");
+		 EntityManager em=emf.createEntityManager();
+		 EntityTransaction et=em.getTransaction();
+		 et.begin();
+		 
+		 Employee e1=new Employee();
+		 e1.setId(100);
+		 e1.setName("Ram");
+		 
+		 RegularEmployee r1=new RegularEmployee();
+		 r1.setId(101);
+		 r1.setName("Sam");
+		 r1.setSalary(20000.0);
+		 r1.setBonus(2000.0);
+		 
+		 ContractEmployee c1=new ContractEmployee();
+		 c1.setId(102);
+		 c1.setName("Saj");
+		 c1.setPayPerHour(2000.2);
+		 c1.setDuration(20);
+		 
+		 em.persist(e1);
+		 em.persist(r1);
+		 em.persist(c1);
+		 
+		 et.commit();
+		 System.out.println("Success");
+		 em.close();
+		 emf.close();
+												  
+	  }
 }
+```
 
-
+```mysql
 mysql> select * from emp100;
 +---------------+-----+------+-------+--------+----------+------------+
 | empType       | id  | name | bonus | salary | duration | payPerHour |
@@ -418,11 +448,13 @@ mysql> select * from emp100;
 | cont_employee | 102 | Saj  |  NULL |   NULL |       20 |     2000.2 |
 +---------------+-----+------+-------+--------+----------+------------+
 3 rows in set (0.01 sec)
+```
 
 
-2. Table per concrete class inheritance
-       - For each entity class it creates separate table
+## 2. Table per concrete class inheritance
+   - For each entity class it creates separate table
 
+```java
 @Entity
 @Table(name="emp101")
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
@@ -431,7 +463,9 @@ public class Employee {
    private Integer id;
    private String name;
 }
+```
 
+```java
 @Entity
 @Table(name="regemp101")
 @AttributeOverrides({
@@ -442,7 +476,9 @@ public class RegularEmployee extends Employee{
     private Double salary;
     private Double bonus;
 }
+```
 
+```java
 @Entity
 @Table(name="contemp101")
 @AttributeOverrides({
@@ -453,7 +489,9 @@ public class ContractEmployee extends Employee{
     private Double payPerHour;
     private Integer duration;
 }
+```
 
+```mysql
 mysql> select * from emp101;
 +-----+------+
 | id  | name |
@@ -477,10 +515,13 @@ mysql> select * from contemp101;
 | 102 | Saj  |       20 |     2000.2 |
 +-----+------+----------+------------+
 1 row in set (0.00 sec)
+```
 
-3. Joined/Table per subclass inheritance
-       - used to join the table based primary key and foreign key relationship
 
+## 3. Joined/Table per subclass inheritance
+   - used to join the table based primary key and foreign key relationship
+   
+```java
 @Entity
 @Table(name="emp102")
 @Inheritance(strategy=InheritanceType.JOINED)
@@ -489,7 +530,9 @@ public class Employee {
    private Integer id;
    private String name;
 }
+```
 
+```java
 @Entity
 @Table(name="regemp102")
 @PrimaryKeyJoinColumn(name="id")
@@ -497,7 +540,10 @@ public class RegularEmployee extends Employee{
     private Double salary;
     private Double bonus;
 }
+```
 
+
+```java
 @Entity
 @Table(name="contemp102")
 @PrimaryKeyJoinColumn(name="id")
@@ -505,6 +551,9 @@ public class ContractEmployee extends Employee{
     private Double payPerHour;
     private Integer duration;
 }
+```
+
+```mysql
 mysql> select * from emp102;
 +-----+------+
 | id  | name |
@@ -531,3 +580,4 @@ mysql> select * from contemp102;
 +----------+------------+-----+
 1 row in set (0.01 sec)
 
+```

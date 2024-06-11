@@ -9,7 +9,7 @@
 
 ## Advantage
 1. easy to understand, develop faster appl so increase productivity
-2. reduce ur development time
+2. reduce your development time
 3. Avoid xml configuration
 4. Everything is autoconfigured, so no need for manual configuration
 5. Spring boot comes with embedded server like Apache Tomcat(default), Jetty, Undertow

@@ -4,21 +4,17 @@
    - It is an interface that contains only one abstract method and any number of default or static methods
    - To check whether interface is functional interface or not, we can use @FunctionalInterface annotation
    - Predefined Functional Interfaces
-	   1. Predicate<T> - boolean test(T t)
-	   2. Function<T,R> - R apply(T t)
-	   3. Consumer<T> - void accept(T t)
-      1. Supplier<T> - T get()
-      2. UnaryOperator<T> - T apply(T t)
-      3. BinaryOperator<T> - T apply(T t1, T t2)
-      4. Runnable - void run()
-      5. Callable<V> - V call()
-
-
-
-
-
-
-
+   
+```java
+1. Predicate<T> - boolean test(T t)
+2. Function<T,R> - R apply(T t)
+3. Consumer<T> - void accept(T t)
+4. Supplier<T> - T get()
+5. UnaryOperator<T> - T apply(T t)
+6. BinaryOperator<T> - T apply(T t1, T t2)
+7. Runnable - void run()
+8. Callable<V> - V call()
+```
 
 
 ``` java
@@ -102,7 +98,7 @@ public class Main {
       3. Using stream ofNullable method
       4. Using iterate and generate method
 
-```java
+```
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -145,6 +141,8 @@ public class Main {
     }
 }
 ```
+
+
 
 
 ## 9. New features in JDK 9
@@ -276,7 +274,11 @@ public class Main {
    - It is a part of the JEP 305
    - It is used to simplify the code of the instanceof operator
    - instanceof followed by a pattern is used to test and assign the value of the variable
-   
+
+
+---
+
+
 ```java
 public class Main {
     public static void main(String[] args) {

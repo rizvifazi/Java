@@ -1,7 +1,7 @@
 
 *Date : 05.20.2024*
 
-Handson
+# Handson
 
 Give some dummy data 
 
@@ -21,5 +21,11 @@ Questions:
 8) Write an SQL query that returns the project name, department name, and budget for all projects with a budget < $50,000.
 9) Write an SQL query that returns the employee numbers and salaries of all employees in the 'Consulting' department ordered by descending salary.
 10) Write an SQL query that returns the employee name, project name, employee title, and hours for all works on records.
+
+
+
+
+---
+
 
 
