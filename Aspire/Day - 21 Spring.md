@@ -202,9 +202,10 @@ public class ProfileController {
 }
 ```
 
+
 ```java
 @Configuration
-@Profile("dev")
+@Profile("dev") //will run only in dev profile
 public class AppConfig {
     @PostConstruct // at the time of initializing itself we want to run this method, not tied to any object 
               public void print() {
@@ -264,7 +265,7 @@ server.port=4000
 message=Welcome production user
 ```
 
-Instead we can go with a single `application.yml` file
+Instead we can go with a single `application.yml` file, the default configuration will have the general configs while the environment specific configs will be separated by `---` separator.
 ```yaml
 spring:
   application:
@@ -412,15 +413,20 @@ server:
 ```
 
 
-`@PropertySource` - used to read single property file with different name or in present different location 
-`@PropertySources` - used to read multiple property file with different name or present in different location 
+`@PropertySource` - used to read ==single== property file with different name or in present different location 
+`@PropertySources` - used to read ==multiple== property file with different name or present in different location 
 
-`@ConfigurationProperties` - used to map entire properties in properties file to a separate java bean object
+The above need to be implemented using `@Value` which may become hideous when the number of properties increases. Hence we could use 
+`@ConfigurationProperties` - used to map entire properties in properties file to a separate j==ava bean object==
+
+
 
 # Lombok
 Lombok dependency - to reduce boilerplate code (ie) getter, setter, default constructor, parameterized constructor, toString(), equals(), hashCode(), logging
 
-`student.properties`
+> lombok needs to be configured in eclipse
+
+`student.properties` in src/main/ folder
 ```properties
 student.id=1000
 student.name=Ram
@@ -428,7 +434,7 @@ student.address=Chennai
 student.age=30
 ```
 
-`student1.properties`
+`student1.properties` in local directory
 ```properties
 student.email=ram@gmail.com
 student.course=CSE
@@ -564,3 +570,9 @@ public class MailConfig {
    }
 }
 ```
+
+
+## Implement MailCOnfig class to imlement validations
+
+
+
