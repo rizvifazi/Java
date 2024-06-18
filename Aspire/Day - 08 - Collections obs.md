@@ -619,10 +619,7 @@ Here are two main approaches to achieve immutable collections of objects in Java
     The `java.util.Collections` class provides methods to create unmodifiable versions of existing collections. These unmodifiable collections appear like regular collections but throw exceptions when you try to modify them (add, remove, etc.).
     
     Here's an example:
-    
-    Java
-    
-    ```
+    ```java
     List<String> names = new ArrayList<>();
     names.add("Alice");
     names.add("Bob");
@@ -639,6 +636,9 @@ Here are two main approaches to achieve immutable collections of objects in Java
     - `Collections.unmodifiableList(List)`
     - `Collections.unmodifiableSet(Set)`
     - `Collections.unmodifiableMap(Map)`
+
+
+
 2. **Using Immutable Collection Classes:**
     
     Java provides specific immutable collection implementations that guarantee immutability by design. These classes typically don't allow modifications after creation.
@@ -655,7 +655,7 @@ Here are two main approaches to achieve immutable collections of objects in Java
     
     Java
     
-    ```
+    ```java
     List<String> names = ImmutableList.of("Alice", "Bob");
     
     // Trying to add an element throws an exception (because a new list is returned)
