@@ -1,6 +1,17 @@
 
 *Date : 06.14.2024*
 
+
+## Springboot Interceptors
+- used to intercept client request and response
+- Interceptors are similar to Filters(servlet), but interceptors are applied to the request that are sending to the controller
+- We have to implement HandlerInterceptor interface and override 3 methods
+
+  a. preHandle() - perform any operation before sending request to controller
+  b. postHandle() - perform any operation before sending response to client
+  c. afterCompletion() - perform any operation after completing request and response
+  
+```java
 @RestController
 @Log4j2
 public class EmployeeController {
@@ -18,7 +29,7 @@ public class EmployeeController {
 public class TimerInterceptor implements HandlerInterceptor{
      
                @Override
-                             public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
                                                           throws Exception {
                                            log.info("Inside preHandle");
                                            request.setAttribute("startTime", System.currentTimeMillis());;
@@ -55,45 +66,50 @@ public class EmployeeConfig implements WebMvcConfigurer{
                       registry.addInterceptor(timerInterceptor).addPathPatterns("/emp");
               }
 }
+```
 
-JDBC
-JPA
 
-Spring Data JPA
-    - Used to persist data into database
-    - It is a library that adds as an extra layer of abstraction on top of JPA Providers, mainly to reduce the work of developers 
+# JDBC
+# JPA
 
-JPA Providers - vendors that provide implementation of JPA specification like Hibernate, iBatis, Toplink etc 
+## Spring Data JPA
+- Used to persist data into database
+- It is a library that adds as an extra layer of abstraction on top of JPA Providers, mainly to reduce the work of developers 
 
-JPA Specification - provide mapping of entity class with column of database table using @Entity, @Table, @Id etc
+### JPA Providers 
+- vendors that provide implementation of JPA specification like Hibernate, iBatis, Toplink etc. 
 
-3 layers
-1. Spring Data JPA  - create JPA Repository - 2 interface
-a. JpaRepository<Entityclassname,datatype of PK> interface - used to perform CRUD and batch operation 
-    - T getById(int id) - Deprecated
-    - T getOne(int id) - Deprecated 
-    - T getReferenceById(int id) - fetch single object 
-    - List<T> findAll() - return multiple object
-    - T saveAndFlush(T t) - used to save single object
-    - void saveAllAndFlush(Iterable) - store multiple object inside db
-    - void deleteAllByIdInBatch(Iterable)
-    - void deleteAllInBatch()
-b. JpaSpecificationExecutor<Entityclassname> interface - used to retrieve data based on some condition
+### JPA Specification 
+- provide mapping of entity class with column of database table using @Entity, @Table, @Id etc.
 
-2. Spring data commons layer - 3 interface
-a. Repository<Entityclassname,datatype of PK> interface - marker interface
-b. CrudRepository<Entityclassname,datatype of PK> interface - used to perform only CRUD operation
-     - T save(T t) - store single object 
-     - void saveAll(Iterable) - store multiple object
-     - Optional findById(int id) - return single object
-     - Iterable findAll() - return multiple object
-     - boolean existsById(int id)
-     - void deleteById(int id) - delete single object based on id
-     - void delete(T t) - delete single object
-     - void deleteAll()
-c. PagingAndSortingRepository<Entityclassname,datatype of PK> interface - used for paging and sorting purpose
+#### 3 layers
 
-3. JPA Providers - vendors that provide implementation of JPA specification like Hibernate, iBatis, Toplink etc 
+##### 1. Spring Data JPA  - create JPA Repository - 2 interface
+a. `JpaRepository<Entityclassname,datatype of PK>` interface - used to perform CRUD and batch operation 
+- `T getById(int id)` - Deprecated
+- `T getOne(int id)` - Deprecated 
+- `T getReferenceById(int id)` - fetch single object 
+- `List<T> findAll()` - return multiple object
+- `T saveAndFlush(T t)` - used to save single object
+- `void saveAllAndFlush(Iterable)` - store multiple object inside db
+- `void deleteAllByIdInBatch(Iterable)`
+- `void deleteAllInBatch()`
+b. `JpaSpecificationExecutor<Entityclassname>` interface - used to retrieve data based on some condition
+
+##### 2. Spring data commons layer - 3 interface
+a. `Repository<Entityclassname,datatype of PK>` interface - marker interface
+b. `CrudRepository<Entityclassname,datatype of PK>` interface - used to perform only CRUD operation
+ - `T save(T t)` - store single object 
+ - `void saveAll(Iterable)` - store multiple object
+ - `Optional findById(int id)` - return single object
+ - `Iterable findAll()` - return multiple object
+ - `boolean existsById(int id)`
+ - `void deleteById(int id)` - delete single object based on id
+ - `void delete(T t)` - delete single object
+ - `void deleteAll()`
+c. `PagingAndSortingRepository<Entityclassname,datatype of PK>` interface - used for paging and sorting purpose
+
+##### 3. JPA Providers - vendors that provide implementation of JPA specification like Hibernate, iBatis, Toplink etc 
 
 
 Repository interface
@@ -104,10 +120,11 @@ PagingAndSortingRepository interface
    extends
 JpaRepository interface
 
-1. Create spring boot project with spring data jpa, mysql driver, lombok dependency 
+1. Create spring boot project with spring `data jpa`, `mysql driver`, `lombok` dependency 
 
-2. Configure db info in application.properties
+2. Configure db info in `application.properties`
 
+```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/jpa
 spring.datasource.username=root
 spring.datasource.password=root
@@ -116,9 +133,10 @@ spring.jpa.show-sql = true
 spring.jpa.hibernate.ddl-auto = update
 #dialect will generate the query based on particular db
 spring.jpa.database-platform=org.hibernate.dialect.MySQL5Dialect
+```
 
 3. Create entity class
-
+```java
 @Entity
 @Table(name="empl2024")
 @Data
@@ -133,15 +151,16 @@ public class Employee {
     private String dept;
     private Double salary;
 }
+```
 
 4. Create repository interface
-
+```java
 public interface EmployeeRepository extends JpaRepository<Employee, Integer>{
 
 }
-
+```
 5. 
-
+```java
 @SpringBootApplication
 public class SpringBootJpaApplication implements CommandLineRunner {
               
@@ -219,22 +238,28 @@ public class SpringBootJpaApplication implements CommandLineRunner {
               }
 
 }
-Different ways to communicate with database
+```
+
+
+## Different ways to communicate with database
+
 1. Using predefined methods
-     - T save(T t) - store single object 
-     - void saveAll(Iterable) - store multiple object
-     - Optional findById(int id) - return single object based on id
-     - Iterable findAll() - return multiple object
-     - boolean existsById(int id)
-     - void deleteById(int id) - delete single object based on id
-     - void delete(T t) - delete single object
-     - void deleteAll()
+     - `T save(T t)` - store single object 
+     - `void saveAll(Iterable) `- store multiple object
+     - `Optional findById(int id)` - return single object based on id
+     - `Iterable findAll(`) - return multiple object
+     - `boolean existsById(int id)`
+     - `void deleteById(int id)` - delete single object based on id
+     - `void delete(T t)` - delete single object
+     - `void deleteAll()`
 
 2. Using Custom JPA Method 
      - derived methods used for fetching the data based on other properties except id
-     - name of the method should starts with either findBy/getBy/queryBy/readBy
+     - name of the method should starts with either `findBy/getBy/queryBy/readBy`
      - declare the custom jpa method inside repository interface, so spring data jpa will automatically write logic on behalf of user
 
+
+```java
 List<Employee> findByDept(String dname);
 List<Employee> readByDeptAndSalaryLessThan(String dname,Double sal);
 
@@ -245,57 +270,67 @@ List<Employee> getByNameLikeAndSalaryGreaterThan(String name, Double sal);
 List<Employee> findByDeptIsNull();
 List<Employee> getByNameStartsWith(String name);
 List<Employee> findByNameContainingOrDeptContainingAllIgnoreCase(String name,String dname)
+```
 
 3. Limiting the records based on custom JPA methods 
-        - using First or Top keyword
+	- using First or Top keyword
 
+```java
 Employee findFirstByOrderBySalaryDesc();
 Employee findTopByOrderBySalaryAsc();
 List<Employee> findFirst3ByOrderBySalaryDesc();
 List<Employee> findTop5ByOrderBySalaryAsc();
 List<Employee> findFirst3ByDeptOrderBySalaryDesc(String dname);
+```
 
 4. Count the elements based on custom JPA method
-       - using countBy 
+   - using countBy 
 
+```java
 long countByDept(String dname);  long l=empRepo.countByDept("HR");  //2
 long countByNameEndingWith(String name); 
       long l=empRepo.countByNameEndingWith("ar");
 long countBySalaryGreaterThanEqual(double sal);
+```
 
 5. If we want to perform joins or subqueries then we cant use custom JPA method, in that case we have to write the queries using @Query
     - 2 types of query
-   1. JPAQL - @Query - query the entity class
-   2. SQL - @Query - query the table directly
+   1. JPAQL - `@Query` - query the entity class
+   2. SQL - `@Query` - query the table directly
 
-        @Query("select e from Employee e")  //JPAQL 
-              List<Employee> fetchAllEmployee();
-              
-              @Query(value="select * from empl2024",nativeQuery=true)  //SQL 
-              List<Employee> fetchAllEmployee1();
+```java
+		@Query("select e from Employee e")  //JPAQL 
+		List<Employee> fetchAllEmployee();
+		  
+		@Query(value="select * from empl2024",nativeQuery=true)  //SQL 
+		List<Employee> fetchAllEmployee1();
+```
 
 6. Passing parameters to the queries - 2 ways
 
-1. Positional parameter - using ? - ?1,?2,?3...
-
+1. Positional parameter - using ? - `?1,?2,?3`...
+```java
 @Query("select e from Employee e where e.name like ?1 and e.salary=?2")
 List<Employee> findEmpByNameAndSalary(String name, Double sal);
 
 List<Employee> l1=empRepo.findEmpByNameAndSalary("R%",20000.0);
+```
 
-2. Named Parameter - using : - :a, :abc, :one
+2. Named Parameter - using : - `:a, :abc, :one`
 
-@Param - used to assign value to named parameter
-
+`@Param` - used to assign value to named parameter
+```java
 @Query("select e from Employee e where e.name like :ab and e.salary=:xy")
 List<Employee> findEmpByNameAndSalary1(@Param("ab")String name,@Param("xy") Double sal);
 
 List<Employee> l1=empRepo.findEmpByNameAndSalary1("R%",20000.0);
+```
 
-7. If we want to perform DML operations(insert,update,delete) using @Query, apart from @Query we have to provide 2 more annotation @Modifying, @Transactional
-
-@Modifying
-              @Transactional
-              @Query("update Employee e set e.salary=e.salary+e.salary*:percent/100 where e.dept=:dept")
-              int updateSalary(@Param("dept")String dname,@Param("percent")double percentage);
+7. If we want to perform DML operations(insert,update,delete) using `@Query`, apart from `@Query` we have to provide 2 more annotation `@Modifying`, `@Transactional`
+```java
+	  @Modifying
+	  @Transactional
+	  @Query("update Employee e set e.salary=e.salary+e.salary*:percent/100 where e.dept=:dept")
+	  int updateSalary(@Param("dept")String dname,@Param("percent")double percentage);
+```
 
