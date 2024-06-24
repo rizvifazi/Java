@@ -1,103 +1,170 @@
 
 *Date : 06.14.2024*
 
-
 ## Springboot Interceptors
-- used to intercept client request and response
-- Interceptors are similar to Filters(servlet), but interceptors are applied to the request that are sending to the controller
-- We have to implement HandlerInterceptor interface and override 3 methods
+- used to intercept client request and response.
+- Interceptors are similar to Filters(servlet), but interceptors are applied to the request that are sending to the controller.
+- We have to implement `HandlerInterceptor` interface and override 3 methods.
 
-  a. preHandle() - perform any operation before sending request to controller
-  b. postHandle() - perform any operation before sending response to client
-  c. afterCompletion() - perform any operation after completing request and response
-  
+  a. `preHandle()` - perform any operation before sending request to controller.
+  b. `postHandle()` - perform any operation before sending response to client.
+  c. `afterCompletion()` - perform any operation after completing request and response.
+
+EmployeeController.java
 ```java
+package com.pack.SpringInterceptors;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.extern.log4j.Log4j2;
+
 @RestController
 @Log4j2
 public class EmployeeController {
 
-              @GetMapping("/emp")
-              public String getEmpInfo() {
-                             log.info("Inside Employee controller");
-                             return "Employees are working";
-              }
+	@GetMapping(value = "/emp")
+	public String getEmployee() {
+		log.info("This is inside the getemployee controller method");
+		return "This is the employee class";
+	}
 }
 
+```
 
-@Component
+TimeInterceptor.java
+```java
+package com.pack.SpringInterceptors;
+
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.log4j.Log4j2;
+
+@Component //to inject as a bean
 @Log4j2
-public class TimerInterceptor implements HandlerInterceptor{
-     
-               @Override
-            public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-                                                          throws Exception {
-                                           log.info("Inside preHandle");
-                                           request.setAttribute("startTime", System.currentTimeMillis());;
-                                           return true;
-                             }
-              
-               @Override
-              public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-                                           ModelAndView modelAndView) throws Exception {
-                             // TODO Auto-generated method stub
-                             log.info("Inside postHandle");
-              }
-              
-               @Override
-              public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
-                                           throws Exception {
-                             // TODO Auto-generated method stub
-                             log.info("Inside afterCompletion");
-                             long totalTime=System.currentTimeMillis()-(long)request.getAttribute("startTime");
-                             System.out.println("Total time taken to execute is "+totalTime);
-              }
+public class TimerInterceptor implements HandlerInterceptor {
+
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+		// TODO Auto-generated method stub
+		log.info("Inside Prehandle methos");
+		request.setAttribute("startTime", System.currentTimeMillis());
+		return true;
+	}
+
+	@Override
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+			ModelAndView modelAndView) throws Exception {
+		// TODO Auto-generated method stub
+		log.info("Inside postHandle method");
+	}
+
+	@Override
+	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+			throws Exception {
+		// Check response time
+		log.info("Inside afterCompletion Method");
+		long totalTime=System.currentTimeMillis()-(long)request.getAttribute("startTime");
+		log.info("Total Time taken " + totalTime);
+	}
+
 }
 
+```
+
+EmployeeConfig.java
+```java
+package com.pack.SpringInterceptors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class EmployeeConfig implements WebMvcConfigurer{
-              
-              @Autowired
-              TimerInterceptor timerInterceptor;
+	
+	@Autowired
+	TimerInterceptor timerInterceptor;
+	
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		//registry.addInterceptor(timerInterceptor); // This intercepter will be invoked for all controller programs
+		registry.addInterceptor(timerInterceptor).addPathPatterns("/emp"); // interceptor applies only to this path
+	}
 
-              @Override
-              public void addInterceptors(InterceptorRegistry registry) {
-                             //registry.addInterceptor(timerInterceptor); //this interceptor will be invoked for all controller prg
-                      registry.addInterceptor(timerInterceptor).addPathPatterns("/emp");
-              }
 }
 ```
 
+## Output:
+Browser Output:
+![[Pasted image 20240623230651.png]]
 
+Console Output:
+```cmd
+[SpringInterceptors] [nio-2000-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.pack.SpringInterceptors.EmployeeController#getEmployee()
+[SpringInterceptors] [nio-2000-exec-1] c.p.SpringInterceptors.TimerInterceptor : Inside Prehandle methos
+[SpringInterceptors] [nio-2000-exec-1] c.p.S.EmployeeController : This is inside the getemployee controller method
+[SpringInterceptors] [nio-2000-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'text/html', given [text/html, application/xhtml+xml, image/avif, image/webp, application/xml;q=0.9, */*;q=0.8] and supported [text/plain, */*, application/json, application/*+json]
+
+[SpringInterceptors] [nio-2000-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing ["This is the employee class"]
+[SpringInterceptors] [nio-2000-exec-1] c.p.SpringInterceptors.TimerInterceptor : Inside postHandle method
+[SpringInterceptors] [nio-2000-exec-1] c.p.SpringInterceptors.TimerInterceptor : Inside afterCompletion Method
+[SpringInterceptors] [nio-2000-exec-1] c.p.SpringInterceptors.TimerInterceptor : Total Time taken 36
+[SpringInterceptors] [nio-2000-exec-1] o.s.web.servlet.DispatcherServlet : Completed 200 OK
+```
+
+
+## Interceptors Uses
+Interceptors are a powerful tool in Spring Boot that act as intermediaries between incoming requests and your application's controllers. They offer a centralized way to handle common tasks before a request reaches the controller (pre-handling) or after a response is generated (post-handling). Here are some of the key reasons why developers use interceptors in Spring Boot:
+
+- **Reusability:** You can create an interceptor to handle a specific functionality, like authentication or logging, and then apply it to multiple controllers or endpoints. This reduces code duplication and keeps your controllers clean.
+    
+- **Security and Authentication:** A common use case for interceptors is to implement security checks. You can intercept requests in the `preHandle` method and validate tokens, user roles, or other credentials before allowing the request to proceed.
+    
+- **Logging and Monitoring:** By intercepting requests and responses, you can easily gather valuable data for logging and monitoring purposes. You can log details like request URLs, timestamps, user information, and response times within your interceptor (We implemented this).
+    
+- **Cross-cutting Concerns:** Interceptors are ideal for handling aspects that apply to many parts of your application, but aren't necessarily core functionalities of any specific controller. This can include things like adding headers to responses, validating data in requests, or performing cleanup tasks after handling a request.
+    
+In summary, interceptors in Spring Boot provide a flexible way to centralize common tasks, improve code organization, and implement essential functionalities like security and logging without cluttering your controllers.
+
+---
 # JDBC
 # JPA
+- Internally uses hibernate (ORM Tool)
 
 ## Spring Data JPA
-- Used to persist data into database
-- It is a library that adds as an extra layer of abstraction on top of JPA Providers, mainly to reduce the work of developers 
+- Used to persist data into database.
+- It is a library that adds as an extra layer of abstraction on top of JPA Providers, mainly to reduce the work of developers.
 
 ### JPA Providers 
 - vendors that provide implementation of JPA specification like Hibernate, iBatis, Toplink etc. 
 
 ### JPA Specification 
-- provide mapping of entity class with column of database table using @Entity, @Table, @Id etc.
+- provide mapping of entity class with column of database table using `@Entity`, `@Table`, `@Id` etc.
 
 #### 3 layers
 
 ##### 1. Spring Data JPA  - create JPA Repository - 2 interface
-a. `JpaRepository<Entityclassname,datatype of PK>` interface - used to perform CRUD and batch operation 
+a. `JpaRepository<Entityclassname,datatype of PK>` interface - used to perform CRUD and batch operation(multiple inserts/interaction records). We have separate concept specific for batch operations that is Spring Batch Processing(CSV file).
 - `T getById(int id)` - Deprecated
 - `T getOne(int id)` - Deprecated 
 - `T getReferenceById(int id)` - fetch single object 
 - `List<T> findAll()` - return multiple object
 - `T saveAndFlush(T t)` - used to save single object
-- `void saveAllAndFlush(Iterable)` - store multiple object inside db
+- `void saveAllAndFlush(Iterable)` - store multiple object inside DB
 - `void deleteAllByIdInBatch(Iterable)`
 - `void deleteAllInBatch()`
+
 b. `JpaSpecificationExecutor<Entityclassname>` interface - used to retrieve data based on some condition
 
 ##### 2. Spring data commons layer - 3 interface
-a. `Repository<Entityclassname,datatype of PK>` interface - marker interface
+a. `Repository<Entityclassname,datatype of PK>` interface - marker interface, no predefined implementation
 b. `CrudRepository<Entityclassname,datatype of PK>` interface - used to perform only CRUD operation
  - `T save(T t)` - store single object 
  - `void saveAll(Iterable)` - store multiple object
@@ -107,22 +174,31 @@ b. `CrudRepository<Entityclassname,datatype of PK>` interface - used to perform 
  - `void deleteById(int id)` - delete single object based on id
  - `void delete(T t)` - delete single object
  - `void deleteAll()`
+ 
 c. `PagingAndSortingRepository<Entityclassname,datatype of PK>` interface - used for paging and sorting purpose
 
 ##### 3. JPA Providers - vendors that provide implementation of JPA specification like Hibernate, iBatis, Toplink etc 
 
 
 Repository interface
-  extends 
+  extends
 CrudRepository interface
   extends
 PagingAndSortingRepository interface
    extends
 JpaRepository interface
 
-1. Create spring boot project with spring `data jpa`, `mysql driver`, `lombok` dependency 
+> We always use JpaRepository interface, because it extends all the other interfaces.
 
-2. Configure db info in `application.properties`
+
+## Implementation
+
+>[!CAUTION]
+>The below are implemented in Spring Boot 3.0 version, we we will be importing everything from `jakarta` package and not `javax`. No more servlet concept available after Spring Boot 3.0. When migrating from SB 2.0 to 3.0 one important change we need to make is to change all `javax` to `jakarta`
+
+1. Create spring boot project with `spring data jpa`, `mysql driver`, `lombok` dependency 
+
+2. Configure DB info in `application.properties`
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/jpa
@@ -131,8 +207,23 @@ spring.datasource.password=root
 spring.datasource.driver-class-name=com.mysql.jdbc.Driver
 spring.jpa.show-sql = true
 spring.jpa.hibernate.ddl-auto = update
-#dialect will generate the query based on particular db
-spring.jpa.database-platform=org.hibernate.dialect.MySQL5Dialect
+#dialect will generate the query based on particular db, not required in the latest version
+#spring.jpa.database-platform=org.hibernate.dialect.MySQL5Dialect
+```
+
+`application.yml`
+```yaml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/jpa
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL5Dialect
+    hibernate:
+      ddl-auto: update
 ```
 
 3. Create entity class
@@ -159,7 +250,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer>{
 
 }
 ```
-5. 
+- when the above line of code is written, Spring Data JPA will take care of all the implementations and we are not required to write any logic.
+
+5. Main method with COmmandLineRunner
 ```java
 @SpringBootApplication
 public class SpringBootJpaApplication implements CommandLineRunner {
@@ -173,7 +266,7 @@ public class SpringBootJpaApplication implements CommandLineRunner {
 
               @Override
               public void run(String... args) throws Exception {
-                             //insertEmployee();
+                             //insertEmployee(); to insert data into DATABASE
                              //fetchEmployee(104);
                              //fetchAllEmployees();
                              //updateEmployee(104);
@@ -194,18 +287,18 @@ public class SpringBootJpaApplication implements CommandLineRunner {
 
               private void deleteEmployee(int i) {
                              if(empRepo.existsById(i)) {
-                                           //empRepo.deleteById(i);
+                                           //empRepo.deleteById(i); can use both
                                            Employee e=empRepo.findById(i).get();
                                            empRepo.delete(e);
                              }
               }
 
               private void updateEmployee(int i) {
-        if(empRepo.existsById(i)) {
-               Employee e=empRepo.findById(i).get();
-               e.setSalary(22000.0);
-               empRepo.save(e);
-        }
+					        if(empRepo.existsById(i)) {
+					               Employee e=empRepo.findById(i).get();
+					               e.setSalary(22000.0);
+					               empRepo.save(e);
+					        }
               }
 
               private void fetchAllEmployees() {
@@ -219,7 +312,7 @@ public class SpringBootJpaApplication implements CommandLineRunner {
 
               private void insertEmployee() {
                              /*Employee e1=new Employee(100,"Ram","male",ram@gmail.com,"HR",25000.0);
-                             empRepo.save(e1);*/
+                             empRepo.save(e1);*/ //To save a single record, takes object as argument
                              
                              List<Employee> l1=new ArrayList<>();
                              Employee e1=new Employee(101,"Sam","male",sam@gmail.com,"IT",35000.0);
@@ -234,7 +327,7 @@ public class SpringBootJpaApplication implements CommandLineRunner {
                              l1.add(e5);
                              Employee e6=new Employee(106,"John","male",John@gmail.com,"HR",15000.0);
                              l1.add(e6);
-                             empRepo.saveAll(l1);
+                             empRepo.saveAll(l1); // takes list as argument
               }
 
 }
@@ -243,20 +336,24 @@ public class SpringBootJpaApplication implements CommandLineRunner {
 
 ## Different ways to communicate with database
 
-1. Using predefined methods
-     - `T save(T t)` - store single object 
-     - `void saveAll(Iterable) `- store multiple object
-     - `Optional findById(int id)` - return single object based on id
-     - `Iterable findAll(`) - return multiple object
-     - `boolean existsById(int id)`
-     - `void deleteById(int id)` - delete single object based on id
-     - `void delete(T t)` - delete single object
-     - `void deleteAll()`
+### 1. Using predefined methods
+ - `T save(T t)` - store single object 
+ - `void saveAll(Iterable) `- store multiple object
+ - `Optional findById(int id)` - return single object based on id
+ - `Iterable findAll(`) - return multiple object
+ - `boolean existsById(int id)`
+ - `void deleteById(int id)` - delete single object based on id
+ - `void delete(T t)` - delete single object
+ - `void deleteAll()`
 
-2. Using Custom JPA Method 
-     - derived methods used for fetching the data based on other properties except id
-     - name of the method should starts with either `findBy/getBy/queryBy/readBy`
-     - declare the custom jpa method inside repository interface, so spring data jpa will automatically write logic on behalf of user
+### 2. Using Custom JPA Method 
+ - derived methods used for fetching the data based on other properties except `id`.
+ - name of the method should starts with either `findBy/getBy/queryBy/readBy`
+ - only declare the custom JPA method inside repository interface, so spring data jpa will automatically write logic on behalf of user
+
+
+>[!CAUTION]
+>Custom JPA methods are not predefined, we need to try with Trial and Error and see which declaration is understood by the JPA and which gives us the expected outcome.
 
 
 ```java
@@ -273,7 +370,7 @@ List<Employee> findByNameContainingOrDeptContainingAllIgnoreCase(String name,Str
 ```
 
 3. Limiting the records based on custom JPA methods 
-	- using First or Top keyword
+	- using `First` or `Top` keyword
 
 ```java
 Employee findFirstByOrderBySalaryDesc();

@@ -486,37 +486,111 @@ public class StudentController {
 ```
 
 
-`@Value`
+### `@Value`
 1. Injecting properties one by one
 2. Support SpEL(${}) - Spring Expression Language
 3. Loose binding/Loose Grammar is not supported (ie) attribute name should be matching
 4. Validation of properties is not supported
 5. support only scalar datatype
 
-`@ConfigurationProperties`
+### `@ConfigurationProperties`
 1. Bulk injection of properties
-2. Dosen't support SpEL
+2. Doesn't support SpEL
 3. Supports Loose Binding/Loose Grammar (ie) no need to match the attribute name(ie) special char or cases (eg) NAME, firstname(first-name)
 4. Validation of properties is supported
 5. support all datatypes as well as objects
 
 `mail.properties`
 ```properties
-#Scalar datatypes
+#Scalar Data Types
 mail.to=abc@gmail.com
 mail.from=xyz@gmail.com
 mail.age=25
 mail.firstname=Ram
 mail.lastname=Kumar
 
-#Complex datatypes
+#Complex Data Types
 mail.cc=uvw@gmail.com,pqr@gmail.com
 mail.bcc=efg@gmail.com,klm@gmail.com
 
-#Nested datatype
+#Nested Data Types
 mail.credential.username=Ram
-mail.credential.password=abcd12
+mail.credential.password=abcd12345
 ```
+
+## Accessing Complex/Nested Data Types
+pom.xml
+```xml
+<dependency>
+	<groupId>org.projectlombok</groupId>
+	<artifactId>lombok</artifactId>
+	<optional>true</optional>
+</dependency>
+```
+
+MailConfig.java
+```java
+package com.pack.SpringValidation;
+
+import java.util.List;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+
+import lombok.Data;
+
+@Configuration
+@PropertySource("classpath:mail.properties")
+@ConfigurationProperties(prefix="mail")
+@Data
+public class MailConfig {
+
+	private String to;
+	private String from;
+	private Integer age;
+	private String FIRSTNAME; // ConfigProp - Loosely bound
+	private String Last_Name; // Loose Bound
+
+	private String[] cc; // Complex props
+	private List<String> bcc; // Complex properties
+
+	private Credential credential = new Credential();
+	
+	@Data // To access get+set of nested properties
+	public class Credential {
+		private String username; // nested prop
+		private String password; // nested prop
+	}
+}
+```
+
+MailController.java
+```java
+package com.pack.SpringValidation.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.pack.SpringValidation.MailConfig;
+
+@RestController
+public class MailController {
+
+	@Autowired
+	MailConfig config;
+	
+	@GetMapping(value="/mail")
+	public String getMail() {
+		return config.getFIRSTNAME()+" "+config.getBcc()+" "+config.getCredential().getPassword();
+	}
+}
+
+```
+
+Output when running the program from `main()` method
+![[Pasted image 20240623162241.png]]
 
 
 # Validation
@@ -529,16 +603,43 @@ To do validation
 	   <version>6.0.5.Final</version>
 </dependency>
  <dependency>
+	   <groupId>jakarta.validation</groupId>
+	   <artifactId>jakarta.validation-api</artifactId>
+	   <version>2.0.1</version>
+ </dependency>
+ 
+ <!-- DO NOT USE THE BELOW-->
+ <dependency>
 	   <groupId>javax.validation</groupId>
 	   <artifactId>validation-api</artifactId>
 	   <version>2.0.0.Final</version>
  </dependency>
 ```
 
+>[!CAUTION]
+>`javax.validation` is deprecated, you must use `jakarta.validation`
+
+
 `@Validated` - to do validating the properties in properties files
 `@Valid` - to do validation for nested class properties
 
 ```java
+package com.pack.SpringValidation;
+
+import java.util.List;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.validation.annotation.Validated;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
 @Configuration
 @PropertySource("classpath:mail.properties")
 @ConfigurationProperties(prefix="mail")
@@ -553,8 +654,8 @@ public class MailConfig {
    @Max(value=40)
    private Integer age;
    @NotNull
-   private String FIRSTNAME;
-   private String LAST_NAME;
+   private String FIRSTNAME; //Loose binding, no need to match exact name
+   private String LAST_NAME; //Loose binding, no need to match exact name
    
    private String[] cc;
    private List<String> bcc;
@@ -571,90 +672,34 @@ public class MailConfig {
 }
 ```
 
+## Output
+Console Output:
+```cmd
+***************************
+APPLICATION FAILED TO START
+***************************
 
-### All required dependencies
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.6</version>
-		<relativePath /> <!-- lookup parent from repository -->
-	</parent>
-	<groupId>com.example</groupId>
-	<artifactId>SpringProfiles</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
-	<name>SpringProfiles</name>
-	<description>Implement Profiles using application yaml</description>
-	<properties>
-		<java.version>17</java.version>
-	</properties>
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-tomcat</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+Description:
 
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jetty</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>apache-jsp</artifactId>
-			<version>11.0.21</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<scope>runtime</scope>
-			<optional>true</optional>
-		</dependency>
+Binding to target com.pack.SpringValidation.MailConfig$$SpringCGLIB$$0 failed:
 
-	</dependencies>
+    Property: mail.credential.password
+    Value: "abcd12345"
+    Origin: "mail.credential.password" from property source "class path resource [mail.properties]"
+    Reason: size must be between 4 and 8
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 
-</project>
+Action:
 
+Update your application's configuration
 ```
-## Implement MailCOnfig class to imlement validations
+> Application runs properly after updating the password length
+
+
+Browser Output:
+![[Pasted image 20240623203757.png]]
+
+
 
 
 
