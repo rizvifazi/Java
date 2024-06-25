@@ -307,13 +307,13 @@ public class TestExampleUtil {
 
 4. `@AfterEach` - the method with @AfterEach  will be invoked first after each testcases are completed 
 
-Junit4                                        Junit5
-1. @BeforeClass                            1. @BeforeAll
-2. @AfterClass                             2. @AfterAll
-3. @Before                                 3. @BeforeEach
-4. @After                                  4. @AfterEach
-5. @Ignore                                 5. @Disabled 
-
+| Junit4            | Junit5           |
+| ----------------- | ---------------- |
+| 1. `@BeforeClass` | 1. `@BeforeAll`  |
+| 2. `@AfterClass`  | 2. `@AfterAll`   |
+| 3. `@Before`      | 3. `@BeforeEach` |
+| 4. `@After`       | 4. `@AfterEach`  |
+| 5. `@Ignore`      | 5. `@Disabled`   |
 
 ```java
 public class TestExampleUtilLifeCycle {
