@@ -197,8 +197,29 @@ JpaRepository interface
 >The below are implemented in Spring Boot 3.0 version, we we will be importing everything from `jakarta` package and not `javax`. No more servlet concept available after Spring Boot 3.0. When migrating from SB 2.0 to 3.0 one important change we need to make is to change all `javax` to `jakarta`
 
 1. Create spring boot project with `spring data jpa`, `mysql driver`, `lombok` dependency 
+	- Use  `mvn dependency::tree` if faced "BUILD FAILURE" with `mvn clean install` 
+	- And define the data source properties if you are using Data JPA.
+	- Remove the Dialect property from properties file.
 
-2. Configure DB info in `application.properties`
+2.  Create the required DB in MySQL. (`jpa`)
+```mysql
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| javabatch          |
+| jpa                |
+| mysql              |
+| performance_schema |
+| sakila             |
+| sys                |
+| world              |
++--------------------+
+8 rows in set (0.00 sec)
+```
+
+3. Configure DB info in `application.properties`
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/jpa
@@ -214,6 +235,8 @@ spring.jpa.hibernate.ddl-auto = update
 `application.yml`
 ```yaml
 spring:
+  application:
+    name: SpringbootJPA
   datasource:
     url: jdbc:mysql://localhost:3306/jpa
     username: root
@@ -221,12 +244,16 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
   jpa:
     show-sql: true
-    database-platform: org.hibernate.dialect.MySQL5Dialect
+    #database-platform: org.hibernate.dialect.MySQL5Dialect
     hibernate:
       ddl-auto: update
 ```
 
-3. Create entity class
+4. `mvn clean install` & Update Maven Project
+	- running `mvn clean install` before configuring Data Source props in `properties.yml` will cause build failures.
+
+
+5. Create entity class
 ```java
 @Entity
 @Table(name="empl2024")
@@ -244,15 +271,93 @@ public class Employee {
 }
 ```
 
-4. Create repository interface
+6. Create repository interface
 ```java
 public interface EmployeeRepository extends JpaRepository<Employee, Integer>{
 
 }
 ```
-- when the above line of code is written, Spring Data JPA will take care of all the implementations and we are not required to write any logic.
+- when the above line of code is written, Spring Data JPA will take care of all the DB implementations and we are not required to write any logic.
 
-5. Main method with COmmandLineRunner
+5. Main method with `CommandLineRunner` implementing `run` method to preload DB.
+```java
+package com.pack.SpringbootJPA;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import com.pack.SpringbootJPA.repository.IEmployeeRepository;
+
+@SpringBootApplication
+public class SpringbootJpaApplication implements CommandLineRunner{
+
+	@Autowired
+	IEmployeeRepository empRepo;
+	
+	public static void main(String[] args) {
+		SpringApplication.run(SpringbootJpaApplication.class, args);
+	}
+
+	//Runs before the main method
+	@Override
+	public void run(String... args) throws Exception {
+		// TODO Auto-generated method stub
+		insertEmployee();
+		
+	}
+
+	private void insertEmployee() {
+		// TODO Auto-generated method stub
+		Employee e1 = new Employee(100,"Ram","male","ram@gmail.com","HR", 25000.0);
+		empRepo.save(e1);
+	}
+
+}
+```
+
+	Updated DB:
+```mysql
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| javabatch          |
+| jpa                |
+| mysql              |
+| performance_schema |
+| sakila             |
+| sys                |
+| world              |
++--------------------+
+8 rows in set (0.00 sec)
+
+
+mysql> use jpa;
+Database changed
+
+mysql> show tables;
++---------------+
+| Tables_in_jpa |
++---------------+
+| empl2024      |
++---------------+
+1 row in set (0.00 sec)
+
+mysql> select * from empl2024;
++-----+------------+---------------+--------+------+--------+
+| id  | department | email         | gender | name | salary |
++-----+------------+---------------+--------+------+--------+
+| 100 | HR         | ram@gmail.com | male   | Ram  |  25000 |
++-----+------------+---------------+--------+------+--------+
+1 row in set (0.00 sec)
+```
+
+
+
+
 ```java
 @SpringBootApplication
 public class SpringBootJpaApplication implements CommandLineRunner {
