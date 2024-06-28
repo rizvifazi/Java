@@ -280,6 +280,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer>{
 - when the above line of code is written, Spring Data JPA will take care of all the DB implementations and we are not required to write any logic.
 
 5. Main method with `CommandLineRunner` implementing `run` method to preload DB.
+
+#### `save()`
 ```java
 package com.pack.SpringbootJPA;
 
@@ -317,7 +319,7 @@ public class SpringbootJpaApplication implements CommandLineRunner{
 }
 ```
 
-	Updated DB:
+Updated DB:
 ```mysql
 mysql> show databases;
 +--------------------+
@@ -355,7 +357,228 @@ mysql> select * from empl2024;
 1 row in set (0.00 sec)
 ```
 
+Console Output:
+```cmd
+Hibernate: create table empl2024 (id integer not null, department varchar(255), email varchar(255), gender varchar(255), name varchar(255), salary float(53), primary key (id)) engine=InnoDB
+2024-06-27T08:15:39.731+05:30  INFO 32568 --- [SpringbootJPA] [           main] c.p.S.SpringbootJpaApplication           : Started SpringbootJpaApplication in 3.778 seconds (process running for 4.145)
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.id=?
+Hibernate: insert into empl2024 (department,email,gender,name,salary,id) values (?,?,?,?,?,?)
+```
 
+#### `saveAll()`
+```java
+@Override
+	public void run(String... args) throws Exception {
+		// TODO Auto-generated method stub
+		insertEmployee();
+		
+	}
+
+	private void insertEmployee() {
+		// TODO Auto-generated method stub
+		List<Employee> l1=new ArrayList<>();
+        Employee e1=new Employee(101,"Sam","male","sam@gmail.com","IT",35000.0);
+        l1.add(e1);
+        Employee e2=new Employee(102,"Saj","male","saj@gmail.com","Sales",30000.0);
+        l1.add(e2);
+        Employee e3=new Employee(103,"Tam","male","tam@gmail.com","HR",45000.0);
+        l1.add(e3);
+        Employee e4=new Employee(104,"Lam","female","lam@gmail.com","Sales",25000.0);
+        l1.add(e4);
+        Employee e5=new Employee(105,"Lim","female","lim@gmail.com","IT",40000.0);
+        l1.add(e5);
+        Employee e6=new Employee(106,"John","male","John@gmail.com","HR",15000.0);
+        l1.add(e6);
+       
+        empRepo.saveAll(l1);
+	}
+```
+
+
+Console Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.id=?
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.id=?
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.id=?
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.id=?
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.id=?
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.id=?
+Hibernate: insert into empl2024 (department,email,gender,name,salary,id) values (?,?,?,?,?,?)
+Hibernate: insert into empl2024 (department,email,gender,name,salary,id) values (?,?,?,?,?,?)
+Hibernate: insert into empl2024 (department,email,gender,name,salary,id) values (?,?,?,?,?,?)
+Hibernate: insert into empl2024 (department,email,gender,name,salary,id) values (?,?,?,?,?,?)
+Hibernate: insert into empl2024 (department,email,gender,name,salary,id) values (?,?,?,?,?,?)
+Hibernate: insert into empl2024 (department,email,gender,name,salary,id) values (?,?,?,?,?,?)
+```
+
+Updated DB:
+```mysql
+mysql> select * from empl2024;
++-----+------------+----------------+--------+------+--------+
+| id  | department | email          | gender | name | salary |
++-----+------------+----------------+--------+------+--------+
+| 100 | HR         | ram@gmail.com  | male   | Ram  |  25000 |
+| 101 | IT         | sam@gmail.com  | male   | Sam  |  35000 |
+| 102 | Sales      | saj@gmail.com  | male   | Saj  |  30000 |
+| 103 | HR         | tam@gmail.com  | male   | Tam  |  45000 |
+| 104 | Sales      | lam@gmail.com  | female | Lam  |  25000 |
+| 105 | IT         | lim@gmail.com  | female | Lim  |  40000 |
+| 106 | HR         | John@gmail.com | male   | John |  15000 |
++-----+------------+----------------+--------+------+--------+
+7 rows in set (0.00 sec)
+```
+
+
+#### `findById(id)`
+
+```java
+	@Override
+	public void run(String... args) throws Exception {
+		// TODO Auto-generated method stub
+		fetchEmployee(104);
+		
+	}
+
+	private void fetchEmployee(int i) {
+		// TODO Auto-generated method stub
+		System.out.println(empRepo.findById(i).get());	
+	
+```
+
+Console Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.id=?
+Employee(id=104, name=Lam, gender=female, email=lam@gmail.com, department=Sales, salary=25000.0)
+```
+
+#### `findAll()`
+```java
+@Override
+	public void run(String... args) throws Exception {
+		// TODO Auto-generated method stub
+		fetchAllEmployees();
+		
+	}
+
+	private void fetchAllEmployees() {
+		// TODO Auto-generated method stub
+		List<Employee> l1 = empRepo.findAll();
+		l1.forEach(System.out::println);
+		
+	}
+```
+
+Console Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0
+Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=25000.0)
+Employee(id=101, name=Sam, gender=male, email=sam@gmail.com, department=IT, salary=35000.0)
+Employee(id=102, name=Saj, gender=male, email=saj@gmail.com, department=Sales, salary=30000.0)
+Employee(id=103, name=Tam, gender=male, email=tam@gmail.com, department=HR, salary=45000.0)
+Employee(id=104, name=Lam, gender=female, email=lam@gmail.com, department=Sales, salary=25000.0)
+Employee(id=105, name=Lim, gender=female, email=lim@gmail.com, department=IT, salary=40000.0)
+Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=15000.0)
+```
+
+#### `Update`
+```java
+@Override
+	public void run(String... args) throws Exception {
+		// TODO Auto-generated method stub
+		updateEmployee(104);
+	}
+
+	private void updateEmployee(int i) {
+		// TODO Auto-generated method stub
+		if(empRepo.existsById(i)) {
+			Employee e = empRepo.findById(i).get();
+			e.setSalary(40000.00);
+			empRepo.save(e);
+		}
+	}
+```
+
+Console Output:
+```cmd
+Hibernate: select count(*) from empl2024 e1_0 where e1_0.id=?
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.id=?
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.id=?
+Hibernate: update empl2024 set department=?,email=?,gender=?,name=?,salary=? where id=?
+```
+
+Updated DB:  104 salary 25000 -> 40000
+```mysql
+mysql> select * from empl2024;
++-----+------------+----------------+--------+------+--------+
+| id  | department | email          | gender | name | salary |
++-----+------------+----------------+--------+------+--------+
+| 100 | HR         | ram@gmail.com  | male   | Ram  |  25000 |
+| 101 | IT         | sam@gmail.com  | male   | Sam  |  35000 |
+| 102 | Sales      | saj@gmail.com  | male   | Saj  |  30000 |
+| 103 | HR         | tam@gmail.com  | male   | Tam  |  45000 |
+| 104 | Sales      | lam@gmail.com  | female | Lam  |  25000 |
+| 105 | IT         | lim@gmail.com  | female | Lim  |  40000 |
+| 106 | HR         | John@gmail.com | male   | John |  15000 |
++-----+------------+----------------+--------+------+--------+
+7 rows in set (0.00 sec)
+
+mysql> select * from empl2024;
++-----+------------+----------------+--------+------+--------+
+| id  | department | email          | gender | name | salary |
++-----+------------+----------------+--------+------+--------+
+| 100 | HR         | ram@gmail.com  | male   | Ram  |  25000 |
+| 101 | IT         | sam@gmail.com  | male   | Sam  |  35000 |
+| 102 | Sales      | saj@gmail.com  | male   | Saj  |  30000 |
+| 103 | HR         | tam@gmail.com  | male   | Tam  |  45000 |
+| 104 | Sales      | lam@gmail.com  | female | Lam  |  40000 |
+| 105 | IT         | lim@gmail.com  | female | Lim  |  40000 |
+| 106 | HR         | John@gmail.com | male   | John |  15000 |
++-----+------------+----------------+--------+------+--------+
+7 rows in set (0.00 sec)
+```
+
+
+
+#### `delete()`
+
+```java
+@Override
+	public void run(String... args) throws Exception {
+		// TODO Auto-generated method stub
+		deleteEmployee(104);
+	}
+
+	private void deleteEmployee(int i) {
+		// TODO Auto-generated method stub
+		if(empRepo.existsById(i)) {
+			Employee e = empRepo.findById(i).get();
+			empRepo.delete(e);
+		}
+```
+
+Console Output :
+```cmd
+Hibernate: select count(*) from empl2024 e1_0 where e1_0.id=?
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.id=?
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.id=?
+Hibernate: delete from empl2024 where id=?
+```
+
+Updated DB: deleted 104
+```mysql
+mysql> select * from empl2024;
++-----+------------+----------------+--------+------+--------+
+| id  | department | email          | gender | name | salary |
++-----+------------+----------------+--------+------+--------+
+| 100 | HR         | ram@gmail.com  | male   | Ram  |  25000 |
+| 101 | IT         | sam@gmail.com  | male   | Sam  |  35000 |
+| 102 | Sales      | saj@gmail.com  | male   | Saj  |  30000 |
+| 103 | HR         | tam@gmail.com  | male   | Tam  |  45000 |
+| 105 | IT         | lim@gmail.com  | female | Lim  |  40000 |
+| 106 | HR         | John@gmail.com | male   | John |  15000 |
++-----+------------+----------------+--------+------+--------+
+6 rows in set (0.00 sec)
+```
 
 
 ```java
@@ -462,8 +685,8 @@ public class SpringBootJpaApplication implements CommandLineRunner {
 
 
 ```java
-List<Employee> findByDept(String dname);
-List<Employee> readByDeptAndSalaryLessThan(String dname,Double sal);
+List<Employee> findByDept(String dname); //here dept must be a property of Entity
+List<Employee> readByDeptAndSalaryLessThan(String dname,Double sal); //Here salary is a Entity property
 
 like - Pattern matching (%,_)
 
@@ -536,3 +759,221 @@ List<Employee> l1=empRepo.findEmpByNameAndSalary1("R%",20000.0);
 	  int updateSalary(@Param("dept")String dname,@Param("percent")double percentage);
 ```
 
+## Custom JPA Methods
+
+1. Add the declaration in `IEmployeeRepository` interface
+```java
+package com.pack.SpringbootJPA.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.pack.SpringbootJPA.Employee;
+
+public interface IEmployeeRepository extends JpaRepository<Employee, Integer> {
+	// Here Department is a property of the Employee Entity
+	// Return type should be list as it would return a list of employees
+	List<Employee> findByDepartment(String dname); 
+}
+```
+
+2. Add the implementation of `CustomJPAMethod` in Main class.
+```java
+	@Override
+	public void run(String... args) throws Exception {
+		// TODO Auto-generated method stub
+		customJPAMethod();	
+	}
+
+	//caan be any method name
+	private void customJPAMethod() {
+		// TODO Auto-generated method stub
+		List<Employee> l = empRepo.findByDepartment("HR");
+		l.forEach(System.out::println);
+		
+	}
+```
+
+3. Console Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.department=?
+Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=25000.0)
+Employee(id=103, name=Tam, gender=male, email=tam@gmail.com, department=HR, salary=45000.0)
+Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=15000.0)
+```
+
+
+
+##### Example 1: `readByDepartmentAndSalaryLessThan(String dname, Double sal)`
+```java
+private void customMethod() {
+		// TODO Auto-generated method stub
+		List<Employee> l = empRepo.readByDepartmentAndSalaryLessThan("HR", 26000.00);
+		l.forEach(System.out::println);	
+	}
+```
+
+Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.department=? and e1_0.salary<?
+Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=25000.0)
+Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=15000.0)
+```
+
+
+##### Example 2: `findByDepartmentAndSalaryLessThan(String dname, Double sal)`
+```java
+private void customMethod() {
+		// TODO Auto-generated method stub
+		List<Employee> l = empRepo.findByDepartmentAndSalaryLessThan("HR", 25000.00);
+		l.forEach(System.out::println);	
+	}
+```
+
+Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.department=? and e1_0.salary<?
+Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=15000.0)
+```
+
+##### Example 3: `queryByNameLike(String name)`
+```java
+private void customMethod() {
+		// TODO Auto-generated method stub
+		List<Employee> l = empRepo.queryByNameLike("S%");
+		l.forEach(System.out::println);
+}
+```
+
+Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.name like ? escape '\\'
+Employee(id=101, name=Sam, gender=male, email=sam@gmail.com, department=IT, salary=35000.0)
+Employee(id=102, name=Saj, gender=male, email=saj@gmail.com, department=Sales, salary=30000.0)
+```
+
+##### Example 4: `getByNameLikeAndSalaryGreaterThan(String name, Double sal)`
+```java
+private void customMethod() {
+		// TODO Auto-generated method stub
+		List<Employee> l = empRepo.getByNameLikeAndSalaryGreaterThan("S%", 30000.00);
+		l.forEach(System.out::println);	
+	}
+```
+
+Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.name like ? escape '\\' and e1_0.salary>?
+Employee(id=101, name=Sam, gender=male, email=sam@gmail.com, department=IT, salary=35000.0)
+```
+
+##### Example 5: `findByDepartmentIsNull()`
+```java
+private void customMethod() {
+		// TODO Auto-generated method stub
+		List<Employee> l = empRepo.findByDepartmentIsNull();
+		l.forEach(System.out::println);	
+	}
+```
+
+Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.department is null
+```
+
+##### Example 6: `getByNameStartsWith(String name)`
+```java
+private void customMethod() {
+		// TODO Auto-generated method stub
+		List<Employee> l = empRepo.getByNameStartsWith("s");
+		l.forEach(System.out::println);	
+	}
+```
+
+Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.name like ? escape '\\'
+Employee(id=101, name=Sam, gender=male, email=sam@gmail.com, department=IT, salary=35000.0)
+Employee(id=102, name=Saj, gender=male, email=saj@gmail.com, department=Sales, salary=30000.0)
+```
+
+##### Example 7:
+```java
+private void customMethod() {
+		// TODO Auto-generated method stub
+		List<Employee> l = empRepo.findByDepartmentAndSalaryLessThan("HR", 26000.00);
+		l.forEach(System.out::println);	
+	}
+```
+
+Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.department=? and e1_0.salary<?
+Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=25000.0)
+Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=15000.0)
+```
+
+#### Example 1:
+```java
+private void customMethod() {
+		// TODO Auto-generated method stub
+		List<Employee> l = empRepo.findByDepartmentAndSalaryLessThan("HR", 26000.00);
+		l.forEach(System.out::println);	
+	}
+```
+
+Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.department=? and e1_0.salary<?
+Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=25000.0)
+Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=15000.0)
+```
+
+#### Example 1:
+```java
+private void customMethod() {
+		// TODO Auto-generated method stub
+		List<Employee> l = empRepo.findByDepartmentAndSalaryLessThan("HR", 26000.00);
+		l.forEach(System.out::println);	
+	}
+```
+
+Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.department=? and e1_0.salary<?
+Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=25000.0)
+Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=15000.0)
+```
+
+#### Example 1:
+```java
+private void customMethod() {
+		// TODO Auto-generated method stub
+		List<Employee> l = empRepo.findByDepartmentAndSalaryLessThan("HR", 26000.00);
+		l.forEach(System.out::println);	
+	}
+```
+
+Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.department=? and e1_0.salary<?
+Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=25000.0)
+Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=15000.0)
+```
+
+#### Example 1:
+```java
+private void customMethod() {
+		// TODO Auto-generated method stub
+		List<Employee> l = empRepo.findByDepartmentAndSalaryLessThan("HR", 26000.00);
+		l.forEach(System.out::println);	
+	}
+```
+
+Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.department=? and e1_0.salary<?
+Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=25000.0)
+Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=15000.0)
+```
