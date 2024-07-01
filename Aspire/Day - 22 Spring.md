@@ -718,7 +718,7 @@ long countByNameEndingWith(String name);
 long countBySalaryGreaterThanEqual(double sal);
 ```
 
-5. If we want to perform joins or subqueries then we cant use custom JPA method, in that case we have to write the queries using @Query
+5. If we want to perform joins or subqueries then we can't use custom JPA method, in that case we have to write the queries using `@Query`
     - 2 types of query
    1. JPAQL - `@Query` - query the entity class
    2. SQL - `@Query` - query the table directly
@@ -731,6 +731,30 @@ long countBySalaryGreaterThanEqual(double sal);
 		List<Employee> fetchAllEmployee1();
 ```
 
+Console Output :
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0
+Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=25000.0)
+Employee(id=101, name=Sam, gender=male, email=sam@gmail.com, department=IT, salary=35000.0)
+Employee(id=102, name=Saj, gender=male, email=saj@gmail.com, department=Sales, salary=30000.0)
+Employee(id=103, name=Tam, gender=male, email=tam@gmail.com, department=HR, salary=45000.0)
+Employee(id=105, name=Lim, gender=female, email=lim@gmail.com, department=IT, salary=40000.0)
+Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=15000.0)
+```
+
+Console Output 2:
+```cmd
+Hibernate: select * from empl2024
+Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=25000.0)
+Employee(id=101, name=Sam, gender=male, email=sam@gmail.com, department=IT, salary=35000.0)
+Employee(id=102, name=Saj, gender=male, email=saj@gmail.com, department=Sales, salary=30000.0)
+Employee(id=103, name=Tam, gender=male, email=tam@gmail.com, department=HR, salary=45000.0)
+Employee(id=105, name=Lim, gender=female, email=lim@gmail.com, department=IT, salary=40000.0)
+Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=15000.0)
+```
+
+
+
 6. Passing parameters to the queries - 2 ways
 
 1. Positional parameter - using ? - `?1,?2,?3`...
@@ -738,27 +762,76 @@ long countBySalaryGreaterThanEqual(double sal);
 @Query("select e from Employee e where e.name like ?1 and e.salary=?2")
 List<Employee> findEmpByNameAndSalary(String name, Double sal);
 
-List<Employee> l1=empRepo.findEmpByNameAndSalary("R%",20000.0);
+List<Employee> l1=empRepo.findEmpByNameAndSalary("R%",25000.0);
 ```
+
+Console Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.name like ? escape '' and e1_0.salary=?
+Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=25000.0)
+```
+
+> Positional parameter is easier than Named parameters.
 
 2. Named Parameter - using : - `:a, :abc, :one`
 
 `@Param` - used to assign value to named parameter
 ```java
 @Query("select e from Employee e where e.name like :ab and e.salary=:xy")
-List<Employee> findEmpByNameAndSalary1(@Param("ab")String name,@Param("xy") Double sal);
+List<Employee> findEmpByNameAndSalary1(@Param("ab") String name,@Param("xy") Double sal);
 
 List<Employee> l1=empRepo.findEmpByNameAndSalary1("R%",20000.0);
 ```
+
+
+### DML
 
 7. If we want to perform DML operations(insert,update,delete) using `@Query`, apart from `@Query` we have to provide 2 more annotation `@Modifying`, `@Transactional`
 ```java
 	  @Modifying
 	  @Transactional
 	  @Query("update Employee e set e.salary=e.salary+e.salary*:percent/100 where e.dept=:dept")
-	  int updateSalary(@Param("dept")String dname,@Param("percent")double percentage);
+	  int updateSalary(@Param("dept") String dname,@Param("percent") double percentage);
 ```
 
+Console Output :
+```cmd
+Hibernate: update empl2024 set salary=(salary+((salary*?)/100)) where department=?
+3
+```
+- Here 3 is the number of changed records. It will be the `int` return value of any DML Queries.
+
+Updated DB: Salary increased for HR Dept
+```mysql
+mysql> select * from empl2024;
++-----+------------+----------------+--------+------+--------+
+| id  | department | email          | gender | name | salary |
++-----+------------+----------------+--------+------+--------+
+| 100 | HR         | ram@gmail.com  | male   | Ram  |  25000 |
+| 101 | IT         | sam@gmail.com  | male   | Sam  |  35000 |
+| 102 | Sales      | saj@gmail.com  | male   | Saj  |  30000 |
+| 103 | HR         | tam@gmail.com  | male   | Tam  |  45000 |
+| 105 | IT         | lim@gmail.com  | female | Lim  |  40000 |
+| 106 | HR         | John@gmail.com | male   | John |  15000 |
++-----+------------+----------------+--------+------+--------+
+6 rows in set (0.00 sec)
+
+mysql> select * from empl2024;
++-----+------------+----------------+--------+------+--------+
+| id  | department | email          | gender | name | salary |
++-----+------------+----------------+--------+------+--------+
+| 100 | HR         | ram@gmail.com  | male   | Ram  |  30000 |
+| 101 | IT         | sam@gmail.com  | male   | Sam  |  35000 |
+| 102 | Sales      | saj@gmail.com  | male   | Saj  |  30000 |
+| 103 | HR         | tam@gmail.com  | male   | Tam  |  54000 |
+| 105 | IT         | lim@gmail.com  | female | Lim  |  40000 |
+| 106 | HR         | John@gmail.com | male   | John |  18000 |
++-----+------------+----------------+--------+------+--------+
+6 rows in set (0.00 sec)
+```
+
+
+# More
 ## Custom JPA Methods
 
 1. Add the declaration in `IEmployeeRepository` interface
@@ -898,82 +971,137 @@ Employee(id=101, name=Sam, gender=male, email=sam@gmail.com, department=IT, sala
 Employee(id=102, name=Saj, gender=male, email=saj@gmail.com, department=Sales, salary=30000.0)
 ```
 
-##### Example 7:
+##### Example 7: `findByNameContainingOrDepartmentContainingAllIgnoreCase(String name, String dept )`
 ```java
 private void customMethod() {
 		// TODO Auto-generated method stub
-		List<Employee> l = empRepo.findByDepartmentAndSalaryLessThan("HR", 26000.00);
+		List<Employee> l = empRepo.findByNameContainingOrDepartmentContainingAllIgnoreCase("RA", "HR");
 		l.forEach(System.out::println);	
 	}
 ```
 
 Output:
 ```cmd
-Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.department=? and e1_0.salary<?
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where upper(e1_0.name) like upper(?) escape '\\' or upper(e1_0.department) like upper(?) escape '\\'
 Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=25000.0)
+Employee(id=103, name=Tam, gender=male, email=tam@gmail.com, department=HR, salary=45000.0)
 Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=15000.0)
 ```
 
-#### Example 1:
+### Limiting 
+ - Using `First` and `Top` keywords.
+
+##### Example 1: Highest paid employee `findFirstByOrderBySalaryDesc()`
+```java
+]private void customMethod() {
+		// TODO Auto-generated method stub
+		Employee e = empRepo.findFirstByOrderBySalaryDesc();
+		System.out.println(e);
+	}
+```
+ - This returns the first employee when ordering in descending order.
+ 
+Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 order by e1_0.salary desc limit ?
+Employee(id=103, name=Tam, gender=male, email=tam@gmail.com, department=HR, salary=45000.0)
+```
+
+##### Example 2:  Highest paid employee `findTopByOrderBySalaryAsc()`
+```java
+private void customMethod() {
+		Employee e = empRepo.findTopByOrderBySalaryAsc();
+		System.out.println(e);
+	}
+```
+
+Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 order by e1_0.salary limit ?
+Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=15000.0)
+```
+
+> The meaning of  `First` and `Top` are same in this context, element depends on `Asc()` or `Desc()`
+
+##### Example 3: Highest paid 3 employees `findTop3ByOrderBySalaryDesc()`
 ```java
 private void customMethod() {
 		// TODO Auto-generated method stub
-		List<Employee> l = empRepo.findByDepartmentAndSalaryLessThan("HR", 26000.00);
+		List<Employee> l = empRepo.findTop3ByOrderBySalaryDesc();
 		l.forEach(System.out::println);	
 	}
 ```
 
 Output:
 ```cmd
-Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.department=? and e1_0.salary<?
-Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=25000.0)
-Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=15000.0)
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 order by e1_0.salary desc limit ?
+Employee(id=103, name=Tam, gender=male, email=tam@gmail.com, department=HR, salary=45000.0)
+Employee(id=105, name=Lim, gender=female, email=lim@gmail.com, department=IT, salary=40000.0)
+Employee(id=101, name=Sam, gender=male, email=sam@gmail.com, department=IT, salary=35000.0)
 ```
 
-#### Example 1:
+##### Example 4: Highest paid 2 employees in given department `findTop2ByDepartmentOrderBySalaryDesc("HR")`
 ```java
 private void customMethod() {
 		// TODO Auto-generated method stub
-		List<Employee> l = empRepo.findByDepartmentAndSalaryLessThan("HR", 26000.00);
+		List<Employee> l = empRepo.findTop2ByDepartmentOrderBySalaryDesc("HR");
 		l.forEach(System.out::println);	
 	}
 ```
 
 Output:
 ```cmd
-Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.department=? and e1_0.salary<?
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.department=? order by e1_0.salary desc limit ?
+Employee(id=103, name=Tam, gender=male, email=tam@gmail.com, department=HR, salary=45000.0)
 Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=25000.0)
-Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=15000.0)
 ```
 
-#### Example 1:
+### Count
+
+##### Example 1: Number of "HR" department records `countByDepartment("HR")`
 ```java
-private void customMethod() {
-		// TODO Auto-generated method stub
-		List<Employee> l = empRepo.findByDepartmentAndSalaryLessThan("HR", 26000.00);
-		l.forEach(System.out::println);	
+private void customMethod() {	
+		System.out.println(empRepo.countByDepartment("HR"));
 	}
 ```
 
 Output:
 ```cmd
-Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.department=? and e1_0.salary<?
-Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=25000.0)
-Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=15000.0)
+Hibernate: select count(e1_0.id) from empl2024 e1_0 where e1_0.department=?
+3
 ```
 
-#### Example 1:
+
+##### Example 2: `countByNameEndingWith(String name)`
 ```java
 private void customMethod() {
-		// TODO Auto-generated method stub
-		List<Employee> l = empRepo.findByDepartmentAndSalaryLessThan("HR", 26000.00);
-		l.forEach(System.out::println);	
+		System.out.println(empRepo.countByNameEndingWith("AM"));
 	}
 ```
 
 Output:
 ```cmd
-Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.department=? and e1_0.salary<?
-Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=25000.0)
-Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=15000.0)
+Hibernate: select count(e1_0.id) from empl2024 e1_0 where e1_0.name like ? escape '\\'
+3
 ```
+
+
+
+##### Example 3: `countBySalaryGreaterThan(Double salary)`
+```java
+private void customMethod() {
+		System.out.println(empRepo.countBySalaryGreaterThan(20000.0));
+}
+```
+
+Output:
+```cmd
+Hibernate: select count(e1_0.id) from empl2024 e1_0 where e1_0.salary>?
+5
+```
+
+
+
+
+
+

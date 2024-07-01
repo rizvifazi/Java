@@ -4,11 +4,16 @@
 8. Instead of writing queries in repository interface, we can write queries in entity class and we can refer by their name
     JPAQL - `@NamedQuery`
     SQL - `@NamedNativeQuery`
-    
+
+
+`IEmployeeRepository.java` interface
 ```java
 List<Employee> fetchEmpBySalary(double sal);
-List<Employee> fetchEmpBySalary1(@Param("abc")double sal);
+List<Employee> fetchEmpBySalary1(@Param("xyz") double sal);
+```
 
+`Employee.java` entity class
+```java
 @Entity
 @Table(name="empl2024")
 @Data
@@ -28,19 +33,53 @@ public class Employee {
     private Double salary;
 }
 
+```
 
-List<Employee> l=empRepo.fetchEmpBySalary(20000.0);
 
-List<Employee> l=empRepo.fetchEmpBySalary1(20000.0);
+Custom Method in `SpringBootApplication.java`
+```java
+private void customMethod() {
+		List<Employee> l = empRepo.fetchEmpBySalary(30000.00) ;
+		l.forEach(System.out::println);
+		
+		List<Employee> ls = empRepo.fetchEmpBySalary1(30000.00) ;
+		ls.forEach(System.out::println);
+}
+```
 
-9. For Sorting purpose we have Sort class 
+Console Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.salary=?
+Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=30000.0)
+Employee(id=102, name=Saj, gender=male, email=saj@gmail.com, department=Sales, salary=30000.0)
+Hibernate: select * from empl2024 where salary = ?
+Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=30000.0)
+Employee(id=102, name=Saj, gender=male, email=saj@gmail.com, department=Sales, salary=30000.0)
+```
 
+
+9. For Sorting purpose we have `Sort` class 
+```java
 List<Employee> findByDeptOrderBySalaryDesc(String dname);  //custom JPA method
-              
-List<Employee> findByDept(String dname, Sort s);
 
-List<Employee> l=empRepo.findByDept("HR",Sort.by("salary").descending());
-List<Employee> l1=empRepo.findByDept("HR",Sort.by("salary").ascending());
+
+
+List<Employee> findByDepartmentt(String dname, Sort s); // in IEmployeeRepository interface
+
+List<Employee> l=empRepo.findByDepartmentt("HR",Sort.by("salary").descending()); // in Main class
+List<Employee> l1=empRepo.findByDepartment("HR",Sort.by("salary").ascending()); // in Main class
+```
+
+Console Output:
+```cmd
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.department=? order by e1_0.salary desc
+Employee(id=103, name=Tam, gender=male, email=tam@gmail.com, department=HR, salary=54000.0)
+Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=30000.0)
+Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=18000.0)
+Hibernate: select e1_0.id,e1_0.department,e1_0.email,e1_0.gender,e1_0.name,e1_0.salary from empl2024 e1_0 where e1_0.department=? order by e1_0.salary
+Employee(id=106, name=John, gender=male, email=John@gmail.com, department=HR, salary=18000.0)
+Employee(id=100, name=Ram, gender=male, email=ram@gmail.com, department=HR, salary=30000.0)
+Employee(id=103, name=Tam, gender=male, email=tam@gmail.com, department=HR, salary=54000.0)
 ```
 
 10. Consider we have entity class with some 100 properties, but we need to display only 10 properties 
@@ -52,25 +91,26 @@ mysql> select count(gender) as "Total Count", gender from empl2024 group by gend
 | Total Count | gender |
 +-------------+--------+
 |           5 | male   |
-|           2 | female |
+|           1 | female |
 +-------------+--------+
 2 rows in set (0.00 sec)
 ```
 
 ```java
 @Query("select count(gender) as "Total Count", gender from empl2024 group by gender")
-List<Employee> countGenderWise(); //- wrong - it will display all properties
+List<Employee> countGenderWise(); //- wrong - it will display all properties, all columns 
 
 
 @Query("select count(gender) as "Total Count", gender from empl2024 group by gender")
-List<Object[]> countGenderWise(); //- correct, but it is not practise to return an Object 
+List<Object[]> countGenderWise(); //- correct, but it is not a good practice to return an Object 
 
 @Query("select count(gender) as "Total Count", gender from empl2024 group by gender")
 Map<Integer,String> countGenderWise(); // - wrong, because Spring data jpa dosent support Map as return type
 
-
-Constructor method //- used when we want to display only specific properties from entity class
 ```
+
+#### Constructor method 
+- used when we want to display only specific properties from entity class
 
 ```java
 @Data
@@ -81,14 +121,27 @@ public class GenderCount {
     private String gender;
 }
 
+//assigning to constructor using new keyword
 @Query("select new com.pack.SpringBootJPA.GenderCount(count(e.gender),e.gender) from Employee e group by e.gender")
               List<GenderCount> countGenderWise();
 
 List<GenderCount> l3=empRepo.countGenderWise();
 l3.forEach(System.out::println);
+
 ```
 
-# Integrate Spring Boot and Spring data JPA to develop CRUD appl
+Console Output:
+```cmd
+Hibernate: select count(e1_0.gender),e1_0.gender from empl2024 e1_0 group by e1_0.gender
+GenderCount(count=5, gender=male)
+GenderCount(count=1, gender=female)
+```
+
+
+---
+
+
+# Integrate Spring Boot and Spring data JPA to develop CRUD application
 1. Create Spring boot project with spring web, spring data jpa, h2 db, lombok dependency 
 
 2. Configure db info in `application.properties`
@@ -135,7 +188,7 @@ public interface MovieRepository extends JpaRepository<Movie, Integer>{
 5. Create controller program
 
 `@ResponseEntity` - represent the whole response of entity entity 
-`@RequestBody` - maps the input json request to the domain object (ie) movie object
+`@RequestBody` - maps the input JSON request to the domain object (ie) movie object
 
 client request - controller - service - repository 
 ```java
