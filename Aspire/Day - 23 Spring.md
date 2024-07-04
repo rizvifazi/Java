@@ -66,7 +66,7 @@ List<Employee> findByDeptOrderBySalaryDesc(String dname);  //custom JPA method
 
 List<Employee> findByDepartmentt(String dname, Sort s); // in IEmployeeRepository interface
 
-List<Employee> l=empRepo.findByDepartmentt("HR",Sort.by("salary").descending()); // in Main class
+List<Employee> l=empRepo.findByDepartment("HR",Sort.by("salary").descending()); // in Main class
 List<Employee> l1=empRepo.findByDepartment("HR",Sort.by("salary").ascending()); // in Main class
 ```
 
@@ -499,6 +499,23 @@ spring:
 This example provides a starting point for building a CRUD application with Spring Boot and a Movie entity. You can expand on it by adding functionalities like searching, filtering, and pagination based on your requirements.
 
 
+#### Sources
+
+[info](/faq#citation)
+
+1. [stackoverflow.com/questions/58119359/how-to-insert-entity-with-many-to-many-relation](https://stackoverflow.com/questions/58119359/how-to-insert-entity-with-many-to-many-relation)
+    
+2. [github.com/ADiazJr/SpringAPI](https://github.com/ADiazJr/SpringAPI)
+    
+3. [github.com/MPetersonNevesFilho/IES_101082](https://github.com/MPetersonNevesFilho/IES_101082)
+    
+4. [github.com/EvaJR/ChillFlix](https://github.com/EvaJR/ChillFlix)
+    
+5. [github.com/paingpyaeman04/cinema-ticket-purchase-system](https://github.com/paingpyaeman04/cinema-ticket-purchase-system)
+    
+6. [github.com/LayDan/-forTheUniversity](https://github.com/LayDan/-forTheUniversity)
+
+
 
 ---
 
@@ -631,3 +648,100 @@ public class TestExampleUtilLifeCycle {
 }
 
 ```
+
+
+
+**1. `@BeforeAll`**
+
+- **Purpose:** This annotation, likely from JUnit or a similar testing framework, marks a static method to be executed **once before all test cases** in the current class are run.
+- **Code Snippet:**
+
+```java
+@BeforeAll
+public static void beforeAll() {
+    System.out.println("Executed before all testcases");
+}
+```
+
+**2. `@AfterAll`**
+
+- **Purpose:** This annotation (likely from JUnit) marks a static method to be executed **once after all test cases** in the current class have finished running.
+- **Code Snippet:**
+
+```java
+@AfterAll
+public static void afterAll() {
+    System.out.println("Executed after all testcases");
+}
+```
+
+**3. `@BeforeEach`**
+
+- **Purpose:** This annotation (likely from JUnit) marks a method to be executed **before each test case** in the current class is run.
+- **Code Snippet:**
+
+```java
+@BeforeEach
+public void beforeEach() {
+    System.out.println("Executed before each testcases");
+}
+```
+
+**4. `@AfterEach`**
+
+- **Purpose:** This annotation (likely from JUnit) marks a method to be executed **after each test case** in the current class has finished running.
+- **Code Snippet:**
+
+
+```java
+@AfterEach
+public void afterEach() {
+    System.out.println("Executed after each testcases");
+}
+```
+
+
+**5. `@Test`**
+
+- **Purpose:** This annotation (likely from JUnit) marks a method that represents a test case. The test runner will execute each test method in the class.
+- **Code Snippet:**
+
+
+```java
+@Test
+public void test1() {
+    System.out.println("Inside test1()");
+    assertEquals(1, 1);
+}
+
+@Test
+@Disabled("Ignoring test")
+public void test2() {
+    System.out.println("Inside test2()");
+    assertEquals(2, 2);
+}
+
+@Test
+public void test3() {
+    System.out.println("Inside test3()");
+    assertEquals(3, 3);
+}
+```
+
+The `@Test` annotation is used on all three methods (`test1()`, `test2()`, and `test3()`) to mark them as test cases.
+
+**6. `@Disabled`**
+
+- **Purpose:** This annotation likely belongs to a third-party testing library extending JUnit functionality (the specific library may vary). It marks a test case to be ignored and not executed by the test runner.
+- **Code Snippet:**
+
+```java
+@Test
+@Disabled("Ignoring test")
+public void test2() {
+    System.out.println("Inside test2()");
+    assertEquals(2, 2);
+}
+```
+
+The `@Disabled` annotation is used on the `test2()` method, preventing it from being run during test execution.
