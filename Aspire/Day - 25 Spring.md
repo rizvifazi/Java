@@ -215,3 +215,38 @@ public class TestMovieRepository {
               }
 }
 ```
+
+
+---
+
+JUnit and Mockito are both popular tools used in Java testing, but they serve different purposes:
+
+## **JUnit**
+
+- **What it is:** A unit testing framework.
+- **What it does:** Provides the foundation for writing and running unit tests. It offers features like:
+    - Organizing test cases
+    - Running tests
+    - Asserting expected behavior
+
+## **Mockito**
+
+- **What it is:** A mocking framework.
+- **What it does:** Helps create mock objects for testing. Mock objects simulate the behavior of real objects, allowing you to isolate your code under test from external dependencies. This makes tests faster and more reliable.
+
+Here's a table summarizing the key differences:
+
+|Feature|JUnit|Mockito|
+|---|---|---|
+|Purpose|Writing and running unit tests|Creating mock objects for testing|
+|Scope|Unit-level testing|Isolating dependencies|
+|Functionality|Test case organization, execution|Defining mock behavior, verifying interactions|
+|Use with JUnit|Not required, but often used together|Can be used independently, but often used with JUnit|
+
+**In essence:**
+
+- JUnit is the **conductor** for your unit testing orchestra.
+- Mockito is a specialized **instrument** that helps you play specific notes during the test.
+
+They work well together: JUnit provides the overall testing structure, while Mockito allows you to control dependencies and write more focused tests.
+
