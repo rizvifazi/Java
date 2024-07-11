@@ -250,3 +250,84 @@ Here's a table summarizing the key differences:
 
 They work well together: JUnit provides the overall testing structure, while Mockito allows you to control dependencies and write more focused tests.
 
+---
+Here's a guide to get you started with Mockito:
+
+**1. Setting Up Mockito**
+
+Mockito is a library, so you'll need to add it to your project's dependencies. The dependency configuration depends on your build tool (Maven or Gradle). You can find the specific instructions on the Mockito website ([https://mvnrepository.com/artifact/org.mockito](https://mvnrepository.com/artifact/org.mockito)).
+
+**2. Creating Mock Objects**
+
+Mockito allows you to create mock objects for interfaces and even concrete classes (with limitations). There are two main ways to create mocks:
+
+- **@Mock annotation (JUnit):** This annotation is used with JUnit tests. You declare a field with `@Mock`, and Mockito creates a mock object during test initialization.
+
+Java
+
+```
+public class MyTest {
+
+  @Mock
+  private MyInterface mockObject;
+
+  // ... rest of your test
+}
+```
+
+- **Mockito.mock() method:** This static method is a more general way to create mocks. You provide the class you want to mock as an argument.
+
+Java
+
+```
+MyInterface mockObject = Mockito.mock(MyInterface.class);
+```
+
+**3. Defining Mock Behavior**
+
+Once you have a mock object, you can define its behavior using the `when()` and `thenReturn()` methods.
+
+- **when(object.method(arguments)).thenReturn(returnValue):** This configures the mock object to return a specific value when a particular method is called with certain arguments.
+
+Java
+
+```
+when(mockObject.getValue(10)).thenReturn(20);
+```
+
+- **Matchers:** You can use matchers instead of exact arguments to make your mocks more flexible. Mockito provides various matchers like `anyInt()`, `eq("value")`, and more.
+
+Java
+
+```
+when(mockObject.getValue(anyInt())).thenReturn(42);
+```
+
+**4. Verification**
+
+Mockito allows you to verify if your code interacted with the mock object as expected. Use the `verify()` method on the mock object.
+
+- **verify(mockObject).method(arguments):** This verifies that the specific method was called with the given arguments at least once during the test.
+
+Java
+
+```
+verify(mockObject).getValue(10);
+```
+
+**5. Additional Features**
+
+Mockito offers many other features like:
+
+- **Spies:** Create partial mocks that allow you to mock specific methods while keeping the real behavior for others.
+- **Argument Captors:** Capture arguments passed to mock methods for further assertions.
+- **Exception Throwing:** Configure mocks to throw specific exceptions.
+
+**Learning Resources:**
+
+- The official Mockito website ([https://site.mockito.org/](https://site.mockito.org/)) has a comprehensive documentation and tutorials.
+- Many online resources offer tutorials on using Mockito with JUnit. A quick web search for "Mockito tutorial JUnit" will provide you with detailed examples and explanations.
+
+
+
+
