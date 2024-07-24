@@ -1102,6 +1102,209 @@ Hibernate: select count(e1_0.id) from empl2024 e1_0 where e1_0.salary>?
 
 
 
+---
+
+In the Java Persistence API (JPA), there are various ways to query the database. Each method has its use cases, pros, and cons. This guide will compare JPA Native Queries with other JPA query types: JPQL (Java Persistence Query Language), Criteria API, and Named Queries.
+
+### Table of Contents
+
+1. [JPA Native Queries](#jpa-native-queries)
+2. [JPQL (Java Persistence Query Language)](#jpql-java-persistence-query-language)
+3. [Criteria API](#criteria-api)
+4. [Named Queries](#named-queries)
+5. [Comparison and Use Cases](#comparison-and-use-cases)
+
+### 1. JPA Native Queries
+
+**JPA Native Queries** allow you to write raw SQL queries and execute them within the JPA context.
+
+#### Example
+
+```java
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import java.util.List;
+
+public class UserRepository {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public List<Object[]> findUsersByNativeQuery() {
+        String sql = "SELECT * FROM users";
+        Query query = entityManager.createNativeQuery(sql);
+        return query.getResultList();
+    }
+}
+```
+
+#### Pros
+
+- Full control over SQL: Allows for complex queries that might not be possible with JPQL or Criteria API.
+- Performance optimization: You can use database-specific features and optimizations.
+- Familiarity: If you are already comfortable with SQL, you can leverage that knowledge directly.
+
+#### Cons
+
+- Database dependency: Tightly coupled with the database, reducing portability across different databases.
+- Increased risk of SQL injection: Requires careful handling of parameters to avoid injection vulnerabilities.
+- Harder to maintain: More difficult to read and maintain compared to JPQL and Criteria API.
+
+### 2. JPQL (Java Persistence Query Language)
+
+**JPQL** is an object-oriented query language similar to SQL but operates on entity objects rather than tables.
+
+#### Example
+
+```java
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import java.util.List;
+
+public class UserRepository {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public List<User> findUsersByJPQL() {
+        String jpql = "SELECT u FROM User u";
+        TypedQuery<User> query = entityManager.createQuery(jpql, User.class);
+        return query.getResultList();
+    }
+}
+```
+
+#### Pros
+
+- Database agnostic: Independent of the underlying database, improving portability.
+- Object-oriented: Works with entity objects, making it more intuitive for Java developers.
+- Safer: Automatically handles parameter binding, reducing the risk of SQL injection.
+
+#### Cons
+
+- Limited functionality: Some complex queries might be difficult or impossible to express in JPQL.
+- Learning curve: Requires learning a new query language if you're only familiar with SQL.
+
+### 3. Criteria API
+
+**Criteria API** provides a programmatic way to create queries using Java objects and methods.
+
+#### Example
+
+```java
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import java.util.List;
+
+public class UserRepository {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public List<User> findUsersByCriteria() {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<User> cq = cb.createQuery(User.class);
+        Root<User> user = cq.from(User.class);
+        cq.select(user);
+        return entityManager.createQuery(cq).getResultList();
+    }
+}
+```
+
+#### Pros
+
+- Type-safe: Compile-time checking of queries helps catch errors early.
+- Dynamic query construction: Easier to build complex queries programmatically.
+- Object-oriented: Works with entity objects and the JPA meta-model.
+
+#### Cons
+
+- Verbose: Can be more verbose and harder to read compared to JPQL.
+- Learning curve: Requires understanding of the Criteria API and the JPA meta-model.
+
+### 4. Named Queries
+
+**Named Queries** are predefined, static queries associated with an entity and defined using annotations or XML.
+
+#### Example
+
+```java
+import javax.persistence.*;
+
+@Entity
+@NamedQueries({
+    @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
+    @NamedQuery(name = "User.findByUsername", query = "SELECT u FROM User u WHERE u.username = :username")
+})
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String username;
+    private String password;
+    private String email;
+    // Getters and Setters
+}
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import java.util.List;
+
+public class UserRepository {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public List<User> findAllUsers() {
+        TypedQuery<User> query = entityManager.createNamedQuery("User.findAll", User.class);
+        return query.getResultList();
+    }
+
+    public User findUserByUsername(String username) {
+        TypedQuery<User> query = entityManager.createNamedQuery("User.findByUsername", User.class);
+        query.setParameter("username", username);
+        return query.getSingleResult();
+    }
+}
+```
+
+#### Pros
+
+- Reusability: Queries are defined once and can be reused multiple times.
+- Simplifies code: Reduces the need to define queries within the code, making it cleaner.
+- Easy maintenance: Centralized query definitions make it easier to manage and update.
+
+#### Cons
+
+- Limited flexibility: Named queries are static and less flexible for dynamic query construction.
+- Verbose: Requires additional annotations or XML configurations.
+
+### 5. Comparison and Use Cases
+
+| Feature                    | Native Query      | JPQL                | Criteria API        | Named Query         |
+|----------------------------|-------------------|---------------------|---------------------|---------------------|
+| **Control over SQL**       | High              | Medium              | Medium              | Medium              |
+| **Database Dependency**    | High              | Low                 | Low                 | Low                 |
+| **Type Safety**            | Low               | Medium              | High                | Medium              |
+| **Ease of Maintenance**    | Low               | High                | Medium              | High                |
+| **Dynamic Query Support**  | Low               | Medium              | High                | Low                 |
+| **Performance**            | High (if optimized) | Medium              | Medium              | Medium              |
+
+#### Use Cases
+
+- **Native Query**: Use when you need full control over SQL or when executing complex, database-specific queries.
+- **JPQL**: Use for standard, database-agnostic queries that operate on entity objects.
+- **Criteria API**: Use when you need to construct dynamic, type-safe queries programmatically.
+- **Named Query**: Use for predefined, reusable queries that are used frequently within the application.
+
+By understanding the strengths and limitations of each query type, you can choose the most appropriate method for your specific use case and maintain a clean, efficient, and maintainable codebase.
+
 
 
 
