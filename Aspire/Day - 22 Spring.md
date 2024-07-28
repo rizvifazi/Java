@@ -1306,5 +1306,150 @@ public class UserRepository {
 By understanding the strengths and limitations of each query type, you can choose the most appropriate method for your specific use case and maintain a clean, efficient, and maintainable codebase.
 
 
+---
+To perform complex joins in JPA with Spring Boot, you can use JPQL (Java Persistence Query Language), Criteria API, or native SQL queries. Here's a detailed guide in Obsidian Markdown format:
+
+# Complex Joins in JPA with Spring Boot
+
+## Introduction
+Performing complex joins in JPA involves combining data from multiple entities. JPA offers several ways to accomplish this, including JPQL, Criteria API, and native SQL queries.
+
+## Setting Up the Environment
+Ensure you have a Spring Boot project with JPA dependencies. Add the following dependencies to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <scope>runtime</scope>
+</dependency>
+```
+
+## Entity Classes
+
+### Example Entities
+
+Create two example entities: `Author` and `Book`.
+
+```java
+@Entity
+public class Author {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+
+    @OneToMany(mappedBy = "author")
+    private List<Book> books;
+
+    // Getters and setters
+}
+```
+
+```java
+@Entity
+public class Book {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String title;
+
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private Author author;
+
+    // Getters and setters
+}
+```
+
+## JPQL Join Queries
+
+### Simple Join
+
+Use JPQL to join `Author` and `Book`.
+
+```java
+public interface AuthorRepository extends JpaRepository<Author, Long> {
+    @Query("SELECT a FROM Author a JOIN a.books b WHERE b.title = ?1")
+    List<Author> findAuthorsByBookTitle(String title);
+}
+```
+
+### Join Fetch
+
+Use `JOIN FETCH` to avoid N+1 query problems.
+
+```java
+public interface AuthorRepository extends JpaRepository<Author, Long> {
+    @Query("SELECT a FROM Author a JOIN FETCH a.books WHERE a.id = ?1")
+    Author findAuthorWithBooks(Long id);
+}
+```
+
+## Criteria API
+
+### Using Criteria API for Joins
+
+Create a repository method to perform a join using the Criteria API.
+
+```java
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class AuthorCriteriaRepository {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public List<Author> findAuthorsByBookTitle(String title) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Author> cq = cb.createQuery(Author.class);
+        Root<Author> author = cq.from(Author.class);
+        Join<Author, Book> book = author.join("books");
+        cq.where(cb.equal(book.get("title"), title));
+        return entityManager.createQuery(cq).getResultList();
+    }
+}
+```
+
+## Native SQL Queries
+
+### Using Native SQL for Complex Joins
+
+Sometimes, using native SQL is necessary for complex queries.
+
+```java
+public interface AuthorRepository extends JpaRepository<Author, Long> {
+    @Query(value = "SELECT a.* FROM Author a JOIN Book b ON a.id = b.author_id WHERE b.title = ?1", nativeQuery = true)
+    List<Author> findAuthorsByBookTitleNative(String title);
+}
+```
+
+## Summary
+
+- **JPQL**: Use for standard joins and to leverage JPA's type-safe query language.
+- **Criteria API**: Useful for dynamic and programmatic query creation.
+- **Native SQL**: Use when complex queries cannot be expressed in JPQL or Criteria API.
+
+## Additional Resources
+
+- [Spring Data JPA Reference Documentation](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#reference)
+- [Java Persistence API (JPA) - Oracle](https://www.oracle.com/java/technologies/persistence-jsp.html)
+- [JPQL Guide](https://www.baeldung.com/jpa-queries)
+
+This guide provides a comprehensive overview of how to perform complex joins in JPA with Spring Boot using different approaches. Adjust and expand the content based on your specific requirements and project structure.
+
+
+
 
 
