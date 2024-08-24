@@ -386,4 +386,3 @@ dependencies {
 Swagger UI will automatically be available at `http://localhost:8080/swagger-ui.html` once you start your application. This UI provides a convenient way to interact with the API and see how the API works in real time.
 
 ---
-More functionality will be added
