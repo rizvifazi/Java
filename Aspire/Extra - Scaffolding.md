@@ -113,3 +113,6 @@ public class BookController {
 * For more complex applications, you may need to manually create additional controllers and services to handle specific business logic.
 
 By leveraging scaffolding with Spring Boot and Spring Data REST, you can significantly accelerate your application development process and focus on building the core features that matter.
+
+
+By leveraging scaffolding with Spring Boot and Spring Data REST, you can significantly accelerate your application development process and focus on building the core features that matter.
