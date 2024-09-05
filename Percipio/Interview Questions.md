@@ -442,3 +442,36 @@ Constructors are essential for setting up an object's initial state, ensuring th
 
 ---
 
+## Question 15: What is a constructor?
+
+### Answer:
+
+A constructor is a special method in a class that is called when an object of the class is instantiated. It is used to initialize the object, often by setting initial values for its attributes.
+
+#### Explanation:
+
+Constructors are a fundamental concept in object-oriented programming. They allow objects to be initialized when they are created. Here are the key points about constructors:
+
+- **Name**: A constructor's name must be the same as the class name.
+- **No return type**: Constructors do not have a return type, not even `void`.
+- **Initialization**: Constructors are typically used to initialize an object’s attributes to a specific state.
+- **Types of Constructors**:
+  - **Default Constructor**: A constructor with no parameters. If no constructor is defined in a class, Java automatically provides a default constructor.
+    ```java
+    public class MyClass {
+        MyClass() { // Default constructor
+            System.out.println("Default Constructor Called");
+        }
+    }
+    ```
+  - **Parameterized Constructor**: A constructor that accepts arguments to initialize an object with specific values.
+    ```java
+    public class MyClass {
+        int number;
+        MyClass(int num) { // Parameterized constructor
+            this.number = num;
+        }
+    }
+    ```
+
+Constructors are essential for setting up an object's initial state, ensuring that an object is ready to use immediately after creation. They also play a crucial role in the creation of immutable objects, where all fields must be set at the time of construction.
