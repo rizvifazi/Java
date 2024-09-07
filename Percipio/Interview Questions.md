@@ -475,3 +475,47 @@ Constructors are a fundamental concept in object-oriented programming. They allo
     ```
 
 Constructors are essential for setting up an object's initial state, ensuring that an object is ready to use immediately after creation. They also play a crucial role in the creation of immutable objects, where all fields must be set at the time of construction.
+
+---
+## Question 16: What are final variables and methods?
+
+### Answer:
+
+In Java, the `final` keyword is used to declare constants, methods that cannot be overridden, and classes that cannot be subclassed. When a variable is declared as `final`, it can be assigned only once.
+
+#### Explanation:
+
+1. **Final Variables**:
+   - Final variables are constants whose value is assigned only once and cannot be changed thereafter.
+   - Final variables must be initialized when declared or within a constructor if they are instance variables.
+
+   Example:
+   ```java
+   public class MyClass {
+       final int MAX_VALUE = 100; // Final variable
+   }
+   ```
+
+2. **Final Methods**:
+   - Final methods cannot be overridden by subclasses. This is useful when you want to ensure that a method's behavior remains unchanged across all subclasses.
+
+   Example:
+   ```java
+   public class MyClass {
+       final void display() { // Final method
+           System.out.println("Cannot be overridden");
+       }
+   }
+   ```
+
+3. **Final Classes**:
+   - Final classes cannot be subclassed. This prevents other classes from inheriting from them.
+
+   Example:
+   ```java
+   public final class MyClass {
+       // No class can extend MyClass
+   }
+   ```
+
+Using `final` helps in maintaining the immutability and integrity of variables, methods, and classes. For example, declaring a method as `final` ensures that its implementation is preserved, preventing accidental or malicious modifications by subclasses.
