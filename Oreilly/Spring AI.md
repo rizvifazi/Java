@@ -174,6 +174,5 @@ Explore more advanced use cases such as:
 ## Conclusion
 
 Spring AI offers a robust and modular way to integrate AI capabilities into your Spring Boot applications. It reduces the complexity of AI integration by providing a declarative and cloud-ready solution. With the power of Spring and modern AI services, you can quickly create AI-powered applications that are scalable, maintainable, and production-ready.
-```
 
 This guide provides an overview of **Spring AI**, how to configure it, and how to build AI-based features within a Spring Boot application.
