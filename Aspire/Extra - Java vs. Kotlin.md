@@ -151,3 +151,7 @@ Below is a comparison of some common programming syntax between Java and Kotlin.
 ---
 
 By comparing these syntax examples, you can see how Kotlin often provides more concise and expressive code compared to Java, thanks to its modern language features.
+
+
+---
+
