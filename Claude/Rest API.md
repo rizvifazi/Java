@@ -1,8 +1,4 @@
 
-
-
-Certainly! I'll guide you through creating a Spring Boot REST API for a Coffee domain class. We'll go step by step, providing code snippets and explanations for each part. Let's get started!
-
 Step 1: Set up the project
 
 First, we need to set up a new Spring Boot project. You can do this using Spring Initializer (https://start.spring.io/) or your preferred IDE. Make sure to include the following dependencies:
