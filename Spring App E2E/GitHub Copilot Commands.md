@@ -17,3 +17,11 @@ Prompt 2:
 ```
 @workspace /new Create project Structure for ABC netbanking online portal - front end UI with javascript, Html5 and css3 for styling and F and backend services using Spring boot 3.0.5, Database to be used is H2. It should have following modules: User registration, User login, Account management, Fund Transfer, Transaction history and statements. Use Ajax for asynchronous API calls with backend service layer to interact with backend http://localhost:9090/NetBankingABC/url. it should have following services: Userservice, loginservice, Authservice,fundtransferservice, Accountservice,configservice. DB - H2 with schema sql with realistic data insertion. Maven project type. Java 11. package com.abc.netbanking.
 ```
+
+
+## Combined
+
+```
+@workspace /new Create Capstone project structure for ABC NetBanking Portal with: * Front-end: Vanilla Javascript for UI with HTML5/CSS3 * Back-end: Spring Boot 3.3.5 (Java 17)* Database: H2 with schema and minimum 10 sample data * Modules : UserLogin, UserRegister, ResetPassword, UserProfile, UserSecurity, Notifications, AccountOverview, RecentTransactions, Beneficiaries, MakePayment, TransactionHistory, GenerateReport, ContactUs, FAQ, FeedbackForm, AppInfo  * Services: UserService, LoginService (w/ PasswordResetService), AuthService, AccountService, TransactionService, TransactionHistory and Statement Service AccountService, ConfigService, NotificationService, ReportGenerationService,  BeneficiaryService * Communication: REST API with JWT-based authentication and HTTPS encryption * Base Endpoint : http://localhost:9090/NetBankingABC/**resourceurl** * Testing: JUnit for unit tests * Build Automation: Maven with build tasks for compilation and packaging * Version Control: Git initialized Package: com.abc.netbanking **Optional:** * Include Ajax for asynchronous communication
+```
+
