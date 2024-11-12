@@ -25,3 +25,18 @@ Prompt 2:
 @workspace /new Create Capstone project structure for ABC NetBanking Portal with: * Front-end: Vanilla Javascript for UI with HTML5/CSS3 * Back-end: Spring Boot 3.3.5 (Java 17)* Database: H2 with schema and minimum 10 sample data * Modules : UserLogin, UserRegister, ResetPassword, UserProfile, UserSecurity, Notifications, AccountOverview, RecentTransactions, Beneficiaries, MakePayment, TransactionHistory, GenerateReport, ContactUs, FAQ, FeedbackForm, AppInfo  * Services: UserService, LoginService (w/ PasswordResetService), AuthService, AccountService, TransactionService, TransactionHistory and Statement Service AccountService, ConfigService, NotificationService, ReportGenerationService,  BeneficiaryService * Communication: REST API with JWT-based authentication and HTTPS encryption * Base Endpoint : http://localhost:9090/NetBankingABC/**resourceurl** * Testing: JUnit for unit tests * Build Automation: Maven with build tasks for compilation and packaging * Version Control: Git initialized Package: com.abc.netbanking **Optional:** * Include Ajax for asynchronous communication
 ```
 
+
+
+
+## Authentication Authorization Fundamentals for Spring
+
+
+
+A SecurityConfig class w/ password encoding mechanics. Include the authorization refactoring
+
+Security Config `@Configuration` with `@EnableWebSecurity`.
+`@EnableWebSecurity` is a meta-annotation that includes the removed `@Configuration`, still allowing for bean creation methods within the annotated class; but it also includes the `@EnableGlobalAuthentication` annotation that enables a great deal more security autoconfiguration to be done by Spring Boot for the application.
+
+
+
+
